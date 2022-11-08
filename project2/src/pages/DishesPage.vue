@@ -95,7 +95,7 @@ export default {
         getSeller() {
             axios({
                 method: "get",
-                url: "http://localhost:8080/My/SellerIDFindServlet?shop_id=" + this.dishes.shop_id
+                url: "http://localhost:8080/seller/getSellerByID?shop_id=" + this.dishes.shop_id
             }).then(response => {
                 this.seller = response.data;
             }, error => {
@@ -265,7 +265,6 @@ export default {
             this.dishes.dishes_img5,
         ]
         this.maximg=this.imgList[0]
-            
         this.getSeller();
     },
     components: { Header }

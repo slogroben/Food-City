@@ -18,7 +18,7 @@
             </div>
         </div>
         
-        <div class="list1" v-loading="loading" element-loading-text="拼命加载中">
+        <div class="list1" v-loading="loading" element-loading-text="拼命加载中" v-if="showdishesList">
             <div class="list_content" v-for="(d,index) in showdishesList" :key="index" @click="dishespage(d)">
                 <el-card :body-style="{ padding: '0px' }" shadow="hover">
                 <img :src="img(d.dishes_img1)" v-if="d.dishes_img1" class="image">
@@ -41,31 +41,23 @@ export default {
     name:'DishesList',
     data(){
         return{
-            dishesList:'',
-            showdishesList:'',
+            // dishesList:'',
+            // showdishesList:'',
             loading:true,
             btnloading:false
         }
     },
+    computed:{
+        showdishesList(){
+            let data=this.$store.state.dishesList
+            if(data.length>10){
+                data.splice(10,data.length-10)
+            }
+            this.loading=false
+            return data
+        }
+    },
     methods:{
-        getDishesList(){
-            axios({
-                method:'get',
-                url:"http://localhost:8080/My/DishesAllServlet"
-            }).then(
-                response=>{
-                    this.dishesList=response.data;
-                    this.showdishesList=this.dishesList
-                    if(this.showdishesList.length>10){
-                        this.showdishesList.splice(10,this.showdishesList.length-10)
-                    }
-                    this.loading=false
-                },
-                error=>{
-                    this.getDishesList()
-                }
-            )
-        },
         dishespage(d){
             this.$router.push({name:'dishespage',query:d})
         },
@@ -111,7 +103,7 @@ export default {
         }
     },
     mounted(){
-        this.getDishesList()
+        this.$store.dispatch('getDisheList')
     }
 }
 </script>

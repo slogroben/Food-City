@@ -39,31 +39,38 @@ export default {
     name:'sellerList',
     data(){
         return {
-            sellerList:'',
-            showSellerList:'',
             loading:true
         }
     },
+    computed:{
+        showSellerList(){
+            let data=this.$store.state.sellerList
+            if(data.length>10){
+                data.splice(10,data.length-10)
+            }
+            this.loading=false
+            return data
+        }
+    },
     methods:{
-        getSellerList(){
-            axios({
-                method:'get',
-                // url:"http://localhost:8080/My/SellerAllServlet"
-                url:"http://localhost:8080/My/SellerAllServlet"
-            }).then(
-                response=>{
-                    this.sellerList=response.data;
-                    this.showSellerList=this.sellerList
-                    if(this.showSellerList.length>10){
-                        this.showSellerList.splice(10,this.showSellerList.length-10)
-                    }
-                    this.loading=false
-                },
-                error=>{
-                    this.getSellerList()
-                }
-            )
-        },
+        // getSellerList(){
+        //     axios({
+        //         method:'get',
+        //         url:"http://localhost:8080/seller/getAllSeller"
+        //     }).then(
+        //         response=>{
+        //             this.sellerList=response.data;
+        //             this.showSellerList=this.sellerList
+        //             if(this.showSellerList.length>10){
+        //                 this.showSellerList.splice(10,this.showSellerList.length-10)
+        //             }
+        //             this.loading=false
+        //         },
+        //         error=>{
+        //             this.getSellerList()
+        //         }
+        //     )
+        // },
         sellermsg(s){
             this.$router.push({
                 name:'sellerpage',
@@ -85,7 +92,7 @@ export default {
         }
     },
     mounted(){
-        this.getSellerList()
+        this.$store.dispatch('getSellerList')
     }
 }
 </script>

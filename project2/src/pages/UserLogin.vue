@@ -34,7 +34,7 @@
                 </div>
                 <div>
                     <button class="login" v-show="textbtnflag">登录</button>
-                    <button class="activelogin" @click="textlogin" v-show="!textbtnflag">登陆</button>
+                    <button class="activelogin" @click="textlogin" v-show="!textbtnflag">登录</button>
                 </div>
             </div>
             <div class="forgetpsw">
@@ -93,7 +93,7 @@ import qs from 'qs'
                 if(this.clickflag==0){
                     axios({
                         method:'post',
-                        url:'http://localhost:8080/My/UserLoginServlet',
+                        url:'http://localhost:8080/user/login',
                         data:qs.stringify(this.loginmsg),
                     }).then(
                         response=>{

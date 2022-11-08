@@ -66,7 +66,7 @@ import Header from '@/components/home/Header'
         getDishes() {
             axios({
                 method: "get",
-                url: "http://localhost:8080/My/DishesFindAllServlet?shop_id=" + this.seller.shop_id
+                url: "http://localhost:8080/dishe/getDisheByID?shop_id=" + this.seller.shop_id
             }).then(response => {
                 this.dishes = response.data;
                 if(this.dishes.length>10){

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
 import router from '../src/router/index'
+import store from '../src/store/index'
 import Axios from 'axios'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -14,5 +15,6 @@ Vue.use(ElementUI)
 new Vue({
   el:"#app",
   render: h => h(App),
-  router:router
+  router,
+  store,
 })
