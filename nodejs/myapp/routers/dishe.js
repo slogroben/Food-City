@@ -6,4 +6,8 @@ router.get('/getAllDishe',(req,res)=>{
     DisheService.getAllDishe(req,res)
 })
 
+router.get('/getDisheByID?:id',(req,res)=>{
+    DisheService.getDisheByID(req,res)
+})
+
 module.exports=router
