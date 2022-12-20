@@ -4,17 +4,18 @@ const screct='xycode'
 
 const JWT={
     generate:(data,vaildTime)=>{
+        vaildTime=vaildTime?vaildTime:'1h'
         const token=jwt.sign(data,screct,{expiresIn:vaildTime})
         return token
     },
     verify:(token)=>{
-        const data=jwt.decode(token,screct)
-        if(data){
+        try {
+            const data=jwt.verify(token,screct)
             return data
-        }
-        else{
+        } catch (error) {
             return false
         }
-        
     }
 }
+
+module.exports=JWT
