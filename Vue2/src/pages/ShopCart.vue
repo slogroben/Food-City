@@ -116,23 +116,23 @@ export default {
                 this.del(o)
             })
         },
-        getorderList(){
-            let user_id=JSON.parse(sessionStorage.getItem("user")).id
-            axios({
-                method:'get',
-                url:'http://localhost:8080/My/FindNoSumServlet?user_id='+user_id
-            }).then(
-                response=>{
-                    this.orderList=response.data
-                    this.orderList.forEach(o => {
-                        o.isChecked=false
-                    })
-                },
-                error=>{
-                    console.log(error);
-                }
-            )            
-        },
+        // getorderList(){
+        //     let user_id=JSON.parse(sessionStorage.getItem("user")).id
+        //     axios({
+        //         method:'get',
+        //         url:'http://localhost:8080/My/FindNoSumServlet?user_id='+user_id
+        //     }).then(
+        //         response=>{
+        //             this.orderList=response.data
+        //             this.orderList.forEach(o => {
+        //                 o.isChecked=false
+        //             })
+        //         },
+        //         error=>{
+        //             console.log(error);
+        //         }
+        //     )            
+        // },
         cbox(event,index){
             this.orderList[index].isChecked=event.target.checked
             this.orderList.forEach(o => {
@@ -227,8 +227,8 @@ export default {
         }
     },
     mounted(){
-        this.getorderList()
-        
+        // this.getorderList()
+        this.$store.dispatch('getOrderList')
     }
 }
 </script>

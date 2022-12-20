@@ -55,7 +55,10 @@ export default {
             }
             this.loading=false
             return data
-        }
+        },
+        user(){
+                return this.$store.state.user
+            }
     },
     methods:{
         dishespage(d){
@@ -66,20 +69,20 @@ export default {
             return require('@/assets/upload/'+imgname)
         },
         addshopcart(dishes,event) {
-            let user = JSON.parse(sessionStorage.getItem("user"));
-            if (user) {
+            if (this.user) {
                 let order = {
                     order_title: dishes.dishes_title,
                     order_img1: dishes.dishes_img1,
                     order_price: dishes.dishes_price*1,
                     order_num: 1,
-                    user_id: JSON.parse(sessionStorage.getItem("user")).id,
+                    user_id: this.user.id,
                 };
                 axios({
                     method: "post",
-                    url: "http://localhost:8080/My/OrderAddServlet",
+                    url: "http://localhost:8080/order/add",
                     data: qs.stringify(order)
                 }).then(response => {
+                    console.log(response);
                     this.$message({
                         message: '加入购物车成功',
                         type: 'success'

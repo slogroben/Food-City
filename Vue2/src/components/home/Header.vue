@@ -64,9 +64,9 @@
 <script>
     export default {
         name:'Header',
-        data(){
-            return{
-                user:''
+        computed:{
+            user(){
+                return this.$store.state.user
             }
         },
         methods:{
@@ -82,9 +82,6 @@
                 sessionStorage.removeItem('user')
                 this.$router.go()
             }            
-        },
-        mounted(){
-            this.user=JSON.parse(sessionStorage.getItem('user')) 
         }
     }
 </script>

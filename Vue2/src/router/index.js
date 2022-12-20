@@ -221,7 +221,9 @@ const router = new VueRouter({
 
 // })
 router.beforeEach((to,from,next)=>{
-    let user=JSON.parse(sessionStorage.getItem('user')) 
+    let token=localStorage.getItem('token')
+    router.app.$store.commit('checkUser',token)
+    let user=router.app.$store.state.user 
     if(to.meta.isAuth){
         if(user){
             next()

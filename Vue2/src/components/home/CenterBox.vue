@@ -94,12 +94,18 @@ import axios from 'axios'
         name:'CenterBox',
         data(){
             return {
-                user:'',
                 text:'',
                 circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
                 imgList:'',
             }
         },
+        computed:{
+            user(){
+                let data=this.$store.state.user
+                return data
+            }
+        }
+        ,
         methods:{
             login(){
                 this.$router.push({name:'userlogin'})
@@ -119,7 +125,8 @@ import axios from 'axios'
             }
         },
         mounted(){
-            this.user=JSON.parse(sessionStorage.getItem('user')) 
+            let token=localStorage.getItem('token')
+            this.$store.dispatch('checkUser',token)  
             this.imgList=[
                 require("@/assets/swip/1.jpg"),
                 require("@/assets/swip/2.jpg"),

@@ -48,6 +48,13 @@
 </template>
 
 <script>
+axios.interceptors.response.use(function (response) {
+    const {authorization}=response.headers
+    authorization&&localStorage.setItem('token',authorization)
+    return response;
+  }, function (error) {
+    return Promise.reject(error);
+  });
 import axios from 'axios'
 import qs from 'qs'
     export default {
@@ -100,8 +107,6 @@ import qs from 'qs'
                             this.$router.push({
                                 name:'homepage'
                             })
-                            sessionStorage.setItem("user",JSON.stringify(response.data))
-                            console.log("请求成功"+response.data);
                         },
                         error=>{
                             console.log("请求失败"+error.message);
@@ -112,6 +117,7 @@ import qs from 'qs'
             checkbox(event){
                 this.checkflag=event.target.checked
             },
+            
         }
     }
 </script>
