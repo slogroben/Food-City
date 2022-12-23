@@ -1,4 +1,5 @@
 const OrderController = require("../Controllers/OrderController")
+const { orderStatus } = require("../util/messageCode")
 
 
 const OrderService={
@@ -6,8 +7,14 @@ const OrderService={
         header(res)
        let result= await OrderController.addNoPay(req.body)
        res.send({result})
+    },
+    findOrder:async(req,res)=>{
+        const param=req.query
+        header(res)
+        
     }
 }
+
 
 function header(res){
     res.header("Access-Control-Allow-Origin", "*");

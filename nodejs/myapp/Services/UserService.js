@@ -1,5 +1,6 @@
 const UserContoller = require("../Controllers/UserContoller")
 const JWT = require("../util/jwt")
+const { stateCode } = require("../util/messageCode")
 
 const UserService={
     userLogin:async (req,res)=>{
@@ -20,15 +21,19 @@ const UserService={
         const {username,password}=user
         user=await UserContoller.userLogin(username,password)
         user=user[0][0]
+        header(res)
         if(user){
-            header(res)
             let token=JWT.generate(user)
-            res.send({user,token})
+            res.send({user,token,state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
         }
     }
 }
 function header(res){
     res.header("Access-Control-Allow-Origin", "*");
 }
+
 
 module.exports=UserService
