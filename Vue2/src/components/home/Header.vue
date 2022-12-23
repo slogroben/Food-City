@@ -79,9 +79,13 @@
                 }
             },
             exitlogin(){
-                sessionStorage.removeItem('user')
+                localStorage.removeItem('token')
                 this.$router.go()
             }            
+        },
+        mounted(){
+            let token=localStorage.getItem('token')
+            this.$store.dispatch('checkUser',token)  
         }
     }
 </script>

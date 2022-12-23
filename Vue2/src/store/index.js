@@ -18,7 +18,7 @@ const actions={
         myAxios('get',"http://localhost:8080/dishe/getAllDishe")
         .then(
             response=>{
-                context.commit('getDisheList',response.data)
+                context.commit('modifyDisheList',response.data)
             },
             error=>{
                 this.getDishesList()
@@ -30,7 +30,7 @@ const actions={
         myAxios('get',"http://localhost:8080/seller/getAllSeller")
         .then(
             response=>{
-                context.commit('getSellerList',response.data)
+                context.commit('modifySellerList',response.data)
             },
             error=>{
                 this.getSellerList()
@@ -42,9 +42,15 @@ const actions={
         myAxios('get',"http://localhost:8080/user/check?token="+token)
         .then(
             response=>{
-                const {user,token}=response.data
-                localStorage.setItem('token',token)
-                context.commit('checkUser',user)
+                const {user,token,state}=response.data
+                if(state==stateCode.success){
+                    localStorage.setItem('token',token)
+                    context.commit('modifyUser',user)
+                }
+                if(state==stateCode.error){
+                    localStorage.removeItem('token')
+                    context.commit('modifyUser',null)
+                }
             },
             error=>{
                 this.checkUser()
@@ -52,17 +58,15 @@ const actions={
         )
     },
     getOrderList(context){
-        let user_id=context.state.user.user_id
-        console.log(user_id);
         axios({
             method:'get',
-            url:'http://localhost:8080/My/FindNoSumServlet?user_id='+user_id
+            url:'http://localhost:8080/order/find?status='+orderState.noPay+'&user_id='+user_id
         }).then(
             response=>{
-                this.orderList=response.data
-                this.orderList.forEach(o => {
-                    o.isChecked=false
-                })
+                // this.orderList=response.data
+                // this.orderList.forEach(o => {
+                //     o.isChecked=false
+                // })
             },
             error=>{
                 console.log(error);
@@ -71,22 +75,35 @@ const actions={
     }
 }
 const mutations={
-    getDisheList(state,data){
+    modifyDisheList(state,data){
         state.dishesList=data
     },
-    getSellerList(state,data){
+    modifySellerList(state,data){
         state.sellerList=data
     },
-    checkUser(state,data){
+    modifyUser(state,data){
         state.user=data
     }
 }
 const state={
     dishesList:'',
     sellerList:'',
-    user:'',
+    user:''
 }
 const getters={
+    userNow(state){
+        console.log(state.user);
+        return state.user
+    }
+}
+
+const stateCode={
+    error:0,
+    success:1
+}
+const orderState={
+    noPay:0,
+    Pay:1
 }
 
 export default new Vuex.Store({

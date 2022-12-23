@@ -79,6 +79,7 @@ import Header from '@/components/home/Header';
 import Footer from '@/components/home/Footer';
 import axios from 'axios';
 import qs from 'qs'
+import { nextTick } from 'vue';
 export default {
     name:'ShopCart',
     data(){
@@ -91,6 +92,11 @@ export default {
     components:{
         Header,
         Footer
+    },
+    computed:{
+        user(){
+            return this.$store.state.user
+        }
     },
     methods:{
         del(order){
@@ -227,7 +233,6 @@ export default {
         }
     },
     mounted(){
-        // this.getorderList()
         this.$store.dispatch('getOrderList')
     }
 }

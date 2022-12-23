@@ -101,8 +101,7 @@ import axios from 'axios'
         },
         computed:{
             user(){
-                let data=this.$store.state.user
-                return data
+                return this.$store.state.user
             }
         }
         ,
@@ -125,8 +124,6 @@ import axios from 'axios'
             }
         },
         mounted(){
-            let token=localStorage.getItem('token')
-            this.$store.dispatch('checkUser',token)  
             this.imgList=[
                 require("@/assets/swip/1.jpg"),
                 require("@/assets/swip/2.jpg"),
