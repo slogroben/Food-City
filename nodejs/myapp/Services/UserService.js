@@ -7,7 +7,6 @@ const UserService={
         const {username,password}=req.body
         let user=await UserContoller.userLogin(username,password)
         if(user[0]){
-            header(res)
             user=user[0][0]
             let token=JWT.generate(user)
             res.header('Authorization',token)
@@ -21,7 +20,6 @@ const UserService={
         const {username,password}=user
         user=await UserContoller.userLogin(username,password)
         user=user[0][0]
-        header(res)
         if(user){
             let token=JWT.generate(user)
             res.send({user,token,state:stateCode.success})
@@ -30,9 +28,6 @@ const UserService={
             res.send({state:stateCode.error})
         }
     }
-}
-function header(res){
-    res.header("Access-Control-Allow-Origin", "*");
 }
 
 

@@ -8,6 +8,8 @@ var user=require('./routers/user')
 var order=require('./routers/order')
 
 var urlname=require('url')
+const JWT = require('./util/jwt')
+
 
 
 
@@ -20,11 +22,41 @@ app.listen('8080',()=>{
 app.use(express.urlencoded({extended:false}))
 app.use(express.json())
 
-//校验是否登录
-// app.use((req,res,next)=>{
-//     if(req.url)
-//     console.log(pathname)
-// })
+app.all('*', function (req, res, next) {
+    // 设置请求头为允许跨域
+    res.header('Access-Control-Allow-Origin', '*');
+    // 设置服务器支持的所有头信息字段
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild, sessionToken');
+    // 设置服务器支持的所有跨域请求的方法
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+    if (req.method.toLowerCase() == 'options') {
+        res.send(200);  // 让options尝试请求快速结束
+    } else {
+        next();
+    }
+  })
+//校验token
+app.use((req,res,next)=>{
+    let token=req.header('Authorization')?.split(' ')[1]
+    if(token){
+        let payload=JWT.verify(token)
+        if(payload){   
+            try {
+                let newtoken=JWT.generate(payload)
+                res.header('Authorization',newtoken)
+            } catch (error) {
+                console.log(error);
+            }
+            next()
+        }
+        else{
+            res.status(401).send({errCode:-1,errInfo:'token过期'})
+        }
+    }
+    else{
+        next()
+    }
+})
 
 
 app.use('/user',user)

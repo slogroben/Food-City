@@ -11,6 +11,8 @@ const JWT={
     verify:(token)=>{
         try {
             const data=jwt.verify(token,screct)
+            data.iat?delete data.iat:false
+            data.exp?delete data.exp:false
             return data
         } catch (error) {
             return false
