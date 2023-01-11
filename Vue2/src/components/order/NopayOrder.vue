@@ -30,8 +30,8 @@
       </el-table-column>
       <el-table-column label="状态">
         <template slot-scope="o">
-            <el-tag v-if="o.row.order_state=='nopay'" type="danger">未支付</el-tag>
-            <el-tag v-if="o.row.order_state=='pay'">已支付</el-tag>
+            <el-tag v-if="o.row.order_state==$store.state.orderState.noPay" type="danger">未支付</el-tag>
+            <el-tag v-if="o.row.order_state==$store.state.orderState.Pay">已支付</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -55,16 +55,17 @@ import qs from "qs"
         },
         methods:{
             getOrder(){
-                let user_id=JSON.parse(sessionStorage.getItem("user")).id
+                let state=this.$store.state.orderState.noPay
+                let token=localStorage.getItem('token')
                 axios({
                     method:"get",
-                    url:'http://localhost:8080/My/FindIDServlet?user_id='+user_id
+                    url:'http://localhost:8080/order/find?state='+state,
+                    headers:{
+                    'Authorization':token?'Bearer '+token:null,
+                }
                 }).then(
                 response=>{
                     this.orderList=response.data
-                    this.orderList=this.orderList.filter(o=>{
-                      return o.order_state=='nopay'
-                    })
                 },
                 error=>{
                     console.log(error);
@@ -76,10 +77,13 @@ import qs from "qs"
                 return require('@/assets/upload/'+imgname)
             },
             del(o){
+                let token=localStorage.getItem('token')
                 axios({
-                    method:"post",
-                    url:'http://localhost:8080/My/OrderDelServlet',
-                    data:qs.stringify(o)
+                    method:'post',
+                    url:'http://localhost:8080/order/delete?order_id='+o.order_id,
+                    headers:{
+                    'Authorization':token?'Bearer '+token:null,
+                }
                 }).then(
                 response=>{
                     this.getOrder()

@@ -82,7 +82,6 @@ export default {
                     url: "http://localhost:8080/order/add",
                     data: qs.stringify(order)
                 }).then(response => {
-                    console.log(response);
                     this.$message({
                         message: '加入购物车成功',
                         type: 'success'

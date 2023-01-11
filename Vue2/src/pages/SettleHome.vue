@@ -69,9 +69,13 @@ export default {
             return require('@/assets/upload/'+imgname)
         },
         restate(id,restate){
+                let token=localStorage.getItem('token')
                 axios({
-                    method:'get',
-                    url:'http://localhost:8080/My/RestateServlet?order_id='+id+'&restate='+restate,
+                    method:'put',
+                    url:'http://localhost:8080/order/restate?order_id='+id+'&state='+restate,
+                    headers:{
+                        'Authorization':token?'Bearer '+token:null,
+                    }
                 })
                 .then(
                     response=>{          
@@ -85,7 +89,7 @@ export default {
             this.visible=true
         },
         nopay(){
-            let restate='nopay'
+            let restate=this.$store.state.orderState.noPay
             this.settleList.forEach(s=>{
                 this.restate(s.order_id,restate)
             })
@@ -101,7 +105,7 @@ export default {
                     }, 1000);
         },
         pay(){
-            let restate='pay'
+            let restate=this.$store.state.orderState.Pay
             this.settleList.forEach(s=>{
                 this.restate(s.order_id,restate)
             })
@@ -116,20 +120,6 @@ export default {
                         })  
                     }, 1000);
         },
-        del(o){
-            axios({
-                method:"post",
-                url:'http://localhost:8080/My/OrderDelServlet',
-                data:qs.stringify(o)
-            }).then(
-            response=>{
-                this.getOrder()
-            },
-            error=>{
-                console.log(error);
-            }
-        )
-        }
     },
     mounted(){
         this.settleList=JSON.parse(this.$route.query.list)

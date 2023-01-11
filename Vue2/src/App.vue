@@ -1,20 +1,5 @@
 <template>
-  <!-- <div id="app"> -->
-    <!-- <router-link :to="{userregister}">user</router-link>
-    <router-view></router-view> -->
-    <!-- <UserRegister></UserRegister> -->
-    <!-- <UserLogin></UserLogin> -->
-    <!-- <SellerRegister></SellerRegister> -->
-   <!-- <SellerRegisterMessage></SellerRegisterMessage> -->
-   <!-- <SellerLogin></SellerLogin> -->
-   <!-- <router-link to="/sellerlogin"></router-link>
-   <router-view></router-view> -->
-   <!-- <router-link :to="{name:'homepage'}"></router-link> -->
    <router-view></router-view>
-   <!-- <AdminLogin></AdminLogin> -->
-   <!-- <router-link to="/adminhome"></router-link>
-   <router-view></router-view> -->
-  <!-- </div> -->
 </template>
 
 <script>

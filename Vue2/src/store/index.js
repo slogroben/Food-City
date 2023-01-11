@@ -57,16 +57,16 @@ const actions={
             }
         )
     },
-    getOrderList(context){
+    getOrderList(context,token){
         axios({
             method:'get',
-            url:'http://localhost:8080/order/find?status='+orderState.noPay+'&user_id='+user_id
+            url:'http://localhost:8080/order/find?state='+context.state.orderState.shopCart,
+            headers:{
+                'Authorization':token?'Bearer '+token:null,
+            }
         }).then(
             response=>{
-                // this.orderList=response.data
-                // this.orderList.forEach(o => {
-                //     o.isChecked=false
-                // })
+                context.commit('findOrder',response.data)
             },
             error=>{
                 console.log(error);
@@ -83,28 +83,31 @@ const mutations={
     },
     modifyUser(state,data){
         state.user=data
+    },
+    findOrder(state,data){
+        state.shopcart=data
     }
 }
 const state={
     dishesList:'',
     sellerList:'',
-    user:''
+    user:'',
+    shopcart:'',
+
+    orderState:{
+        shopCart:0,
+        noPay:1,
+        Pay:2
+    }
 }
 const getters={
-    userNow(state){
-        console.log(state.user);
-        return state.user
-    }
 }
 
 const stateCode={
     error:0,
     success:1
 }
-const orderState={
-    noPay:0,
-    Pay:1
-}
+
 
 export default new Vuex.Store({
     actions,

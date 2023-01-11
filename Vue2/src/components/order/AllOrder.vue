@@ -55,10 +55,13 @@ import qs from "qs"
         },
         methods:{
             getOrder(){
-                let user_id=JSON.parse(sessionStorage.getItem("user")).id
+                let token=localStorage.getItem('token')
                 axios({
-                    method:"get",
-                    url:'http://localhost:8080/My/FindIDServlet?user_id='+user_id
+                    method:'get',
+                    url:'http://localhost:8080/order/findAll',
+                    headers:{
+                    'Authorization':token?'Bearer '+token:null,
+                }
                 }).then(
                 response=>{
                     this.orderList=response.data

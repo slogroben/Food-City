@@ -57,11 +57,6 @@ import Header from '@/components/home/Header'
             dishes: "",
         };
     },
-    watch:{
-        dishes(){
-            console.log(this.dishes);
-        }
-    },
     methods: {
         getDishes() {
             axios({

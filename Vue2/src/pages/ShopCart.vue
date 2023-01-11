@@ -79,12 +79,10 @@ import Header from '@/components/home/Header';
 import Footer from '@/components/home/Footer';
 import axios from 'axios';
 import qs from 'qs'
-import { nextTick } from 'vue';
 export default {
     name:'ShopCart',
     data(){
         return{
-            orderList:'',
             checkednum:0,
             checkedflag:false
         }
@@ -96,17 +94,23 @@ export default {
     computed:{
         user(){
             return this.$store.state.user
+        },
+        orderList(){
+            return this.$store.state.shopcart
         }
     },
     methods:{
         del(order){
-            let user_id=JSON.parse(sessionStorage.getItem("user")).id
+            let token=localStorage.getItem('token')
             axios({
-                method:'get',
-                url:'http://localhost:8080/My/OrderDelServlet?order_id='+order.order_id+'&user_id='+user_id
+                method:'post',
+                url:'http://localhost:8080/order/delete?order_id='+order.order_id,
+                headers:{
+                'Authorization':token?'Bearer '+token:null,
+            }
             }).then(
             response=>{
-                this.$router.go()
+                this.updateOrder()
             },
             error=>{
                 console.log(error);
@@ -180,12 +184,16 @@ export default {
             return sum
         },
         getnum(id,num){
+            let token=localStorage.getItem('token')
             axios({
-                method:'get',
-                url:'http://localhost:8080/My/IDNosumServlet?order_id='+id+'&order_num='+num
+                method:'put',
+                url:'http://localhost:8080/order/change?order_id='+id+'&order_num='+num,
+                headers:{
+                'Authorization':token?'Bearer '+token:null,
+            }
             }).then(
-                response => {
-                    
+                response=>{
+
                 },
                 error=>{
                     console.log(error);
@@ -194,19 +202,11 @@ export default {
         },
         sumnum(o){
             o.order_num=o.order_num-0
+            this.getnum(o.order_id,o.order_num)
             if(o.order_num<=1){
                 return
             }
-            this.getnum(o.order_id,o.order_num)
         },
-        // addnum(o){
-        //     o.order_num=o.order_num+1
-        //     this.getnum(o.order_id,o.order_num)
-        // },
-        // decnum(o,event){
-        //     o.order_num=o.order_num-1
-        //     this.getnum(o.order_id,o.order_num)
-        // },
         choosenum(){
             let sum=0
             this.orderList.forEach(o => {
@@ -220,20 +220,32 @@ export default {
             let chooseList=this.orderList.filter(o=>{
                 return o.isChecked==true
             })
-           this.$router.push({
+            if(!chooseList.length){
+                this.$message({
+                        message: '还未选择菜品',
+                        type: 'error'
+                    });
+            }
+            else{
+                this.$router.push({
                 name:'settlehome',
                 query:{
                     list:JSON.stringify(chooseList) 
-                }
-           })
+                        }
+                })
+            }
         },
         img(path){
             const imgname=path.replace('D:\\study\\myproject\\project1\\src\\assets\\upload\\','')
             return require('@/assets/upload/'+imgname)
+        },
+        updateOrder(){
+            let token=localStorage.getItem('token')
+            this.$store.dispatch('getOrderList',token)
         }
     },
     mounted(){
-        this.$store.dispatch('getOrderList')
+        this.updateOrder()
     }
 }
 </script>
