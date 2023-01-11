@@ -78,6 +78,7 @@
 import axios from 'axios'
 import qs from 'qs'
 import Header from '@/components/home/Header'
+import server from '@/utils/request'
 export default {
     name: "DishesPage",
     data() {
@@ -106,31 +107,22 @@ export default {
             this.$router.push({ name: "sellerpage", query: this.seller });
         },
         addshopcart(dishes) {
-            let user = JSON.parse(sessionStorage.getItem("user"));
-            if (user) {
-                let order = {
-                    order_title: this.dishes.dishes_title,
-                    order_img1: this.dishes.dishes_img1,
-                    order_price: this.dishes.dishes_price*this.order_num,
-                    order_num: this.order_num,
-                    user_id: JSON.parse(sessionStorage.getItem("user")).id,
-                };
-                axios({
-                    method: "post",
-                    url: "http://localhost:8080/My/OrderAddServlet",
-                    data: qs.stringify(order)
-                }).then(response => {
-                    this.$message({
-                        message: '加入购物车成功',
-                        type: 'success'
-                    })
-                }, error => {
-                    console.log(error);
-                });
-            }
-            else {
-                this.$router.push({ name: "userlogin" });
-            }
+            let order = {
+                order_title: this.dishes.dishes_title,
+                order_img1: this.dishes.dishes_img1,
+                order_price: this.dishes.dishes_price*this.order_num,
+                order_num: this.order_num,
+                dishes_id:dishes.dishes_id
+            };
+            server.postReq("/order/add",qs.stringify(order))
+            .then(response => {
+                this.$message({
+                    message: '加入购物车成功',
+                    type: 'success'
+                })
+            }, error => {
+                console.log(error);
+            });
         },
         img(path){
             const imgname=path.replace('D:\\study\\myproject\\project1\\src\\assets\\upload\\','')
@@ -210,6 +202,7 @@ export default {
                     order_num: this.order_num,
                     restate:restate,
                     user_id: JSON.parse(sessionStorage.getItem("user")).id,
+                    dishes_id:dishes.dishes_id
                 };
                 axios({
                     method: "post",

@@ -10,6 +10,7 @@
                 v-if="o.row.order_img1"
                 style="width: 100px; height: 100px"
                 :src="img(o.row.order_img1)"
+                @click="$emit('godishe',o.row)"
                 fit="cover">
             </el-image>
         </template>
@@ -46,6 +47,7 @@
 <script>
 import axios from 'axios'
 import qs from "qs"
+import server from '@/utils/request'
     export default {
         name:'PayOrder',
         data(){
@@ -57,9 +59,9 @@ import qs from "qs"
             getOrder(){
                 let state=this.$store.state.orderState.Pay
                 let token=localStorage.getItem('token')
-                axios({
+                server({
                     method:"get",
-                    url:'http://localhost:8080/order/find?state='+state,
+                    url:'/order/find?state='+state,
                     headers:{
                     'Authorization':token?'Bearer '+token:null,
                 }
@@ -79,9 +81,9 @@ import qs from "qs"
             },
             del(o){
                 let token=localStorage.getItem('token')
-                axios({
+                server({
                     method:'post',
-                    url:'http://localhost:8080/order/delete?order_id='+o.order_id,
+                    url:'/order/delete?order_id='+o.order_id,
                     headers:{
                     'Authorization':token?'Bearer '+token:null,
                 }

@@ -37,15 +37,15 @@
                 </div>
                 <div>
                     <div class="boxmin">
-                        <p>0</p>
+                        <p>{{num.shopCart}}</p>
                         <el-button type="text">购物车</el-button>
                     </div>
                     <div class="boxmin">
-                        <p>0</p>
+                        <p>{{num.noPay}}</p>
                         <el-button type="text">待支付</el-button>
                     </div>
                     <div class="boxmin">
-                        <p>0</p>
+                        <p>{{num.Pay}}</p>
                         <el-button type="text">已支付</el-button>
                     </div>
                 </div>
@@ -90,6 +90,7 @@
 
 <script>
 import axios from 'axios'
+import server from '@/utils/request'
     export default {
         name:'CenterBox',
         data(){
@@ -102,6 +103,9 @@ import axios from 'axios'
         computed:{
             user(){
                 return this.$store.state.user
+            },
+            num(){
+                return this.$store.state.num
             }
         }
         ,
@@ -133,6 +137,7 @@ import axios from 'axios'
                 require("@/assets/swip/6.jpg"),
             ]
             this.getText()
+            this.$store.dispatch('getOrderNum')
         }
     }
 </script>

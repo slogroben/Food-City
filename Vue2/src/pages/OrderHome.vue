@@ -22,16 +22,16 @@
       <div class="right"> 
         <el-tabs v-model="activeName">
             <el-tab-pane label="全部订单" name="first">
-              <AllOrder></AllOrder>
+              <AllOrder @godishe="godishe"></AllOrder>
             </el-tab-pane>
             <el-tab-pane label="待付款" name="second">
-              <NopayOrder></NopayOrder>
+              <NopayOrder @godishe="godishe"></NopayOrder>
             </el-tab-pane>
             <el-tab-pane label="已付款" name="third">
-              <PayOrder></PayOrder>
+              <PayOrder @godishe="godishe"></PayOrder>
             </el-tab-pane>
             <el-tab-pane label="退款/售后" name="fourth">
-              <PayOrder></PayOrder>
+              <PayOrder @godishe="godishe"></PayOrder>
             </el-tab-pane>
         </el-tabs>
           
@@ -45,6 +45,7 @@ import Footer from '@/components/home/Footer';
 import AllOrder from '@/components/order/AllOrder';
 import NopayOrder from '../components/order/NopayOrder.vue';
 import PayOrder from '@/components/order/PayOrder.vue';
+import server from '@/utils/request';
 export default {
     name: "OrderHome",
     data(){
@@ -69,6 +70,18 @@ export default {
         if(key=="1-4"){
           this.activeName="fourth"
         }
+      },
+      godishe(o){
+          let {dishes_id}=o
+          server.getReq('/dishe/getDisheByDisheID?dishes_id='+dishes_id)
+          .then(
+              response=>{
+                  this.$router.push({
+                      name:'dishespage',
+                      query:response.data
+                  })
+              }
+          )
       }
     }
 }

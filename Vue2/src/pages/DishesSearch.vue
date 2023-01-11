@@ -37,6 +37,7 @@
 import Header from '@/components/home/Header';
 import axios from 'axios'
 import Top from '@/components/home/Top.vue';
+import server from '@/utils/request';
 export default {
     name: "DishesSearch",
     data(){
@@ -48,10 +49,7 @@ export default {
     components: { Header, Top },
     methods:{
         getDishesList(){
-            axios({
-                method:'get',
-                url:"http://localhost:8080/My/DishesAllServlet"
-            }).then(
+            server.getReq('/dishe/getAllDishe').then(
                 response=>{
                     this.dishesList=response.data;
                     this.showdishesList=this.dishesList

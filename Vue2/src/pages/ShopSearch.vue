@@ -31,6 +31,7 @@
 import Header from '@/components/home/Header'
 import axios from 'axios'
 import Top from '@/components/home/Top.vue'
+import server from '@/utils/request'
 export default {
     name: "ShopSearch",
     data(){
@@ -42,10 +43,7 @@ export default {
     components: { Header, Top },
     methods:{
         getSellerList(){
-            axios({
-                method:'get',
-                url:"http://localhost:8080/My/SellerAllServlet"
-            }).then(
+            server.getReq('/seller/getAllSeller').then(
                 response=>{
                     this.sellerList=response.data;
                     this.showSellerList=this.sellerList

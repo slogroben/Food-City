@@ -1,45 +1,48 @@
+import server from '@/utils/request'
 import axios from 'axios'
 import Vue from 'vue'
 import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-function myAxios(method,url,data){
+function myAxios(method,url,headers,data){
     method=method?method:'get'
-    return axios({
+    return server({
         method,
         url,
+        headers,
     })
 }
 
 const actions={
     //获取所有菜品信息
     getDisheList(context){
-        myAxios('get',"http://localhost:8080/dishe/getAllDishe")
+        myAxios('get',"/dishe/getAllDishe")
         .then(
             response=>{
                 context.commit('modifyDisheList',response.data)
             },
             error=>{
-                this.getDishesList()
+                console.log(error);
             }
         )
     },
     //获取所有商家信息
     getSellerList(context){
-        myAxios('get',"http://localhost:8080/seller/getAllSeller")
+        myAxios('get',"/seller/getAllSeller")
         .then(
             response=>{
                 context.commit('modifySellerList',response.data)
             },
             error=>{
-                this.getSellerList()
+                console.log(error);
             }
         )
     },
     //校验用户
     checkUser(context,token){
-        myAxios('get',"http://localhost:8080/user/check?token="+token)
+        if(!token){return}
+        myAxios('get',"/user/check?token="+token)
         .then(
             response=>{
                 const {user,token,state}=response.data
@@ -53,18 +56,13 @@ const actions={
                 }
             },
             error=>{
-                this.checkUser()
+                console.log(error);
             }
         )
     },
+    //获取所有订单
     getOrderList(context,token){
-        axios({
-            method:'get',
-            url:'http://localhost:8080/order/find?state='+context.state.orderState.shopCart,
-            headers:{
-                'Authorization':token?'Bearer '+token:null,
-            }
-        }).then(
+        myAxios(null,'/order/find?state='+context.state.orderState.shopCart).then(
             response=>{
                 context.commit('findOrder',response.data)
             },
@@ -72,6 +70,30 @@ const actions={
                 console.log(error);
             }
         )            
+    },
+    //获取各种订单数量
+    getOrderNum(context){
+        if(!localStorage.getItem('token')){return}
+        context.state.num.shopCart=0
+        context.state.num.noPay=0
+        context.state.num.Pay=0
+        server.getReq('/order/findByUserID')
+                .then(
+                    response=>{
+                        let orderList=response.data
+                        orderList.forEach(u => {
+                            if(u.order_state==context.state.orderState.shopCart){
+                                context.commit('modifyNum',context.state.orderState.shopCart)
+                            }
+                            if(u.order_state==context.state.orderState.noPay){
+                                context.commit('modifyNum',context.state.orderState.noPay)
+                            }
+                            if(u.order_state==context.state.orderState.Pay){
+                                context.commit('modifyNum',context.state.orderState.Pay)
+                            }
+                        });
+                    }
+                )
     }
 }
 const mutations={
@@ -86,6 +108,11 @@ const mutations={
     },
     findOrder(state,data){
         state.shopcart=data
+    },
+    modifyNum(state,flag){
+        if(flag==state.orderState.shopCart){state.num.shopCart=state.num.shopCart+1}
+        if(flag==state.orderState.noPay){state.num.noPay=state.num.noPay+1}
+        if(flag==state.orderState.Pay){state.num.Pay=state.num.Pay+1}
     }
 }
 const state={
@@ -93,6 +120,12 @@ const state={
     sellerList:'',
     user:'',
     shopcart:'',
+
+    num:{
+        shopCart:0,
+        noPay:0,
+        Pay:0
+    },
 
     orderState:{
         shopCart:0,

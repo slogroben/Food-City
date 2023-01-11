@@ -17,7 +17,9 @@
                     用户名&emsp;：<input type="text" placeholder="请输入用户名" v-model="username">
                 </div>
                 <div>
-                    密&emsp;码&emsp;：<input type="password" placeholder="请输入密码" v-model="password">
+                    <form>
+                        密&emsp;码&emsp;：<input type="password" placeholder="请输入密码" v-model="password" autocomplete="off">
+                    </form>
                 </div>
                 <div>
                     <button class="login" v-show="namebtnflag">登录</button>
@@ -48,15 +50,16 @@
 </template>
 
 <script>
-axios.interceptors.response.use(function (response) {
-    const {authorization}=response.headers
-    authorization&&localStorage.setItem('token',authorization)
-    return response;
-  }, function (error) {
-    return Promise.reject(error);
-  });
+// axios.interceptors.response.use(function (response) {
+//     const {authorization}=response.headers
+//     authorization&&localStorage.setItem('token',authorization)
+//     return response;
+//   }, function (error) {
+//     return Promise.reject(error);
+//   });
 import axios from 'axios'
 import qs from 'qs'
+import server from '@/utils/request'
     export default {
         name:"UserLogin",
         data(){
@@ -98,9 +101,9 @@ import qs from 'qs'
                 this.loginmsg.username=this.username
                 this.loginmsg.password=this.password
                 if(this.clickflag==0){
-                    axios({
+                    server({
                         method:'post',
-                        url:'http://localhost:8080/user/login',
+                        url:'/user/login',
                         data:qs.stringify(this.loginmsg),
                     }).then(
                         response=>{

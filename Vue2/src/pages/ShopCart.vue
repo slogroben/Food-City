@@ -22,14 +22,16 @@
                     <li>
                         <input type="checkbox" @click="cbox($event,index)" :checked="o.isChecked">
                     </li>
-                    <li>
-                        <el-image
-                            v-if="o.order_img1"
-                            style="width: 80px; height: 80px"
-                            fit="contain"
-                            :src="img(o.order_img1)">
-                        </el-image>
-                    </li>
+                    <label @click="godishe(o)">
+                        <li>
+                            <el-image
+                                v-if="o.order_img1"
+                                style="width: 80px; height: 80px"
+                                fit="contain"
+                                :src="img(o.order_img1)">
+                            </el-image>
+                        </li>
+                    </label>
                     <li>{{o.order_title}}</li>
                     <li>{{o.order_price}}</li>
                     <li>
@@ -79,6 +81,7 @@ import Header from '@/components/home/Header';
 import Footer from '@/components/home/Footer';
 import axios from 'axios';
 import qs from 'qs'
+import server from '@/utils/request';
 export default {
     name:'ShopCart',
     data(){
@@ -102,15 +105,16 @@ export default {
     methods:{
         del(order){
             let token=localStorage.getItem('token')
-            axios({
+            server({
                 method:'post',
-                url:'http://localhost:8080/order/delete?order_id='+order.order_id,
+                url:'/order/delete?order_id='+order.order_id,
                 headers:{
                 'Authorization':token?'Bearer '+token:null,
             }
             }).then(
             response=>{
                 this.updateOrder()
+                this.checkedflag=false
             },
             error=>{
                 console.log(error);
@@ -126,23 +130,6 @@ export default {
                 this.del(o)
             })
         },
-        // getorderList(){
-        //     let user_id=JSON.parse(sessionStorage.getItem("user")).id
-        //     axios({
-        //         method:'get',
-        //         url:'http://localhost:8080/My/FindNoSumServlet?user_id='+user_id
-        //     }).then(
-        //         response=>{
-        //             this.orderList=response.data
-        //             this.orderList.forEach(o => {
-        //                 o.isChecked=false
-        //             })
-        //         },
-        //         error=>{
-        //             console.log(error);
-        //         }
-        //     )            
-        // },
         cbox(event,index){
             this.orderList[index].isChecked=event.target.checked
             this.orderList.forEach(o => {
@@ -185,9 +172,9 @@ export default {
         },
         getnum(id,num){
             let token=localStorage.getItem('token')
-            axios({
+            server({
                 method:'put',
-                url:'http://localhost:8080/order/change?order_id='+id+'&order_num='+num,
+                url:'/order/change?order_id='+id+'&order_num='+num,
                 headers:{
                 'Authorization':token?'Bearer '+token:null,
             }
@@ -235,6 +222,19 @@ export default {
                 })
             }
         },
+        godishe(o){
+            server.getReq('/dishe/getDisheByDisheID?dishes_id='+o.dishes_id)
+            .then(
+                response=>{
+                    // console.log(response.data);
+                    this.$router.push({
+                        name:'dishespage',
+                        query:response.data
+                    })
+                }
+            )
+        }
+        ,
         img(path){
             const imgname=path.replace('D:\\study\\myproject\\project1\\src\\assets\\upload\\','')
             return require('@/assets/upload/'+imgname)

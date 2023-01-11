@@ -10,6 +10,7 @@
                 v-if="o.row.order_img1"
                 style="width: 100px; height: 100px"
                 :src="img(o.row.order_img1)"
+                @click="$emit('godishe',o.row)"
                 fit="cover">
             </el-image>
         </template>
@@ -30,8 +31,8 @@
       </el-table-column>
       <el-table-column label="状态">
         <template slot-scope="o">
-            <el-tag v-if="o.row.order_state=='nopay'" type="danger">未支付</el-tag>
-            <el-tag v-if="o.row.order_state=='pay'">已支付</el-tag>
+            <el-tag v-if="o.row.order_state==$store.state.orderState.noPay" type="danger">未支付</el-tag>
+            <el-tag v-if="o.row.order_state==$store.state.orderState.Pay">已支付</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -46,6 +47,7 @@
 <script>
 import axios from 'axios'
 import qs from "qs"
+import server from '@/utils/request'
     export default {
         name:'AllOrder',
         data(){
@@ -56,9 +58,9 @@ import qs from "qs"
         methods:{
             getOrder(){
                 let token=localStorage.getItem('token')
-                axios({
+                server({
                     method:'get',
-                    url:'http://localhost:8080/order/findAll',
+                    url:'/order/findAll',
                     headers:{
                     'Authorization':token?'Bearer '+token:null,
                 }
@@ -76,9 +78,9 @@ import qs from "qs"
                 return require('@/assets/upload/'+imgname)
             },
             del(o){
-                axios({
+                server({
                     method:"post",
-                    url:'http://localhost:8080/My/OrderDelServlet',
+                    url:'/My/OrderDelServlet',
                     data:qs.stringify(o)
                 }).then(
                 response=>{

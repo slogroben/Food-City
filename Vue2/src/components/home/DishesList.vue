@@ -37,6 +37,7 @@
 <script>
 import axios from 'axios'
 import qs from "qs"
+import server from '@/utils/request'
 export default {
     name:'DishesList',
     data(){
@@ -76,16 +77,18 @@ export default {
                     order_price: dishes.dishes_price*1,
                     order_num: 1,
                     user_id: this.user.id,
+                    dishes_id:dishes.dishes_id
                 };
-                axios({
+                server({
                     method: "post",
-                    url: "http://localhost:8080/order/add",
+                    url: "/order/add",
                     data: qs.stringify(order)
                 }).then(response => {
                     this.$message({
                         message: '加入购物车成功',
                         type: 'success'
                     });
+                    this.$store.dispatch('getOrderNum')
                 }, error => {
                     console.log(error);
                 });
