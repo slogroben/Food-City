@@ -5,12 +5,13 @@ const { orderState } = require("../util/messageCode")
 
 const OrderService={
     addOrder:async(req,res)=>{   
+       let user_id=getUserId(req)
+       req.body.user_id=user_id
        let result= await OrderController.addNoPay(req.body)
        res.send({result})
     },
     findOrder:async(req,res)=>{
         let {state}=req.query
-        // let user_id=JWT.verify(req.header('Authorization')?.split(' ')[1]).id\
         let user_id=getUserId(req)
         let data=await OrderController.findOrder(state,user_id)
         res.send(data)
@@ -38,6 +39,11 @@ const OrderService={
         let data=await OrderController.findAll(user_id)
         res.send(data)
     },
+    findByUserID:async(req,res)=>{
+        let user_id=getUserId(req)
+        let data=await OrderController.findByUserID(user_id)
+        res.send(data)
+    }
 }
 
 function getUserId(req){

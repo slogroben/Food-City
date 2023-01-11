@@ -1,18 +1,18 @@
 
 const mysql2=require('mysql2')
 const getConfig=require('../config/mysqlConfig')
-const { orderState } = require('../util/messageCode')
+const { orderState, stateCode } = require('../util/messageCode')
 
 const promisePool=mysql2.createPool(getConfig()).promise()
 const OrderController={
     addNoPay:async(data)=>{
-        let arr=[data.order_title,data.order_img1,data.order_price,data.order_num,orderState.shopCart,data.user_id]
+        let arr=[data.order_title,data.order_img1,data.order_price,data.order_num,orderState.shopCart,data.user_id,data.dishes_id]
         try {
-            await promisePool.query('INSERT INTO `order` VALUE(NULL,?,?,?,?,?,?);',arr)
-            return 1
+            await promisePool.query('INSERT INTO `order` VALUE(NULL,?,?,?,?,?,?,?);',arr)
+            return stateCode.success
         } catch (error) {
             console.log(error);
-            return 0
+            return stateCode.error
         }
     },
     findOrder:async(state,user_id)=>{
@@ -24,9 +24,11 @@ const OrderController={
             return error
         }
     },
-    findAll:async(state,user_id)=>{
+    findAll:async(user_id)=>{
         try {
-            let data=await promisePool.query('select * from `order` where order_state=? or order_state=? and user_id=?',[orderState.Pay,orderState.noPay,user_id])
+            let data=await promisePool.query(
+                'SELECT * FROM `order` WHERE order_state=? AND user_id=? UNION SELECT * FROM `order` WHERE order_state=? AND user_id=?;'
+                ,[orderState.Pay,user_id,orderState.noPay,user_id])
             return data[0]
         } catch (error) {
             console.log(error);
@@ -55,6 +57,15 @@ const OrderController={
         try {
             let result=await promisePool.query('update `order` set order_state=? where order_id=? and user_id=?',[state,order_id,user_id])
             return result
+        } catch (error) {
+            console.log(error);
+            return error
+        }
+    },
+    findByUserID:async(user_id)=>{
+        try {
+            let data=await promisePool.query('SELECT * FROM `order` WHERE user_id=?;',user_id)
+            return data[0]
         } catch (error) {
             console.log(error);
             return error

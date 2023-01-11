@@ -12,7 +12,4 @@ router.get('/check',(req,res)=>{
     UserService.userCheck(req,res,token)
 })
 
-function header(res){
-    res.header("Access-Control-Allow-Origin", "*");
-}
 module.exports=router

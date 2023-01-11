@@ -26,4 +26,8 @@ router.get('/findAll',(req,res)=>{
     OrderService.findAll(req,res)
 })
 
+router.get('/findByUserID',(req,res)=>{
+    OrderService.findByUserID(req,res)
+})
+
 module.exports=router
