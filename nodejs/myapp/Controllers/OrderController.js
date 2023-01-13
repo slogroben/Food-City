@@ -6,9 +6,9 @@ const { orderState, stateCode } = require('../util/messageCode')
 const promisePool=mysql2.createPool(getConfig()).promise()
 const OrderController={
     addNoPay:async(data)=>{
-        let arr=[data.order_title,data.order_img1,data.order_price,data.order_num,orderState.shopCart,data.user_id,data.dishes_id]
+        let arr=[data.order_title,data.order_img1,data.order_price,data.order_num,orderState.shopCart,data.user_id,data.dishes_id,data.time]
         try {
-            await promisePool.query('INSERT INTO `order` VALUE(NULL,?,?,?,?,?,?,?);',arr)
+            await promisePool.query('INSERT INTO `order` VALUE(NULL,?,?,?,?,?,?,?,?);',arr)
             return stateCode.success
         } catch (error) {
             console.log(error);
@@ -53,9 +53,9 @@ const OrderController={
             return error
         }
     },
-    reState:async(state,order_id,user_id)=>{
+    reState:async(state,time,order_id,user_id)=>{
         try {
-            let result=await promisePool.query('update `order` set order_state=? where order_id=? and user_id=?',[state,order_id,user_id])
+            let result=await promisePool.query('update `order` set order_state=?,time=? where order_id=? and user_id=?',[state,time,order_id,user_id])
             return result
         } catch (error) {
             console.log(error);

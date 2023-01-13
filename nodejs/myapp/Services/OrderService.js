@@ -1,4 +1,5 @@
 const OrderController = require("../Controllers/OrderController")
+const getTime = require("../util/getTime")
 const JWT = require("../util/jwt")
 const { orderState } = require("../util/messageCode")
 
@@ -6,7 +7,8 @@ const { orderState } = require("../util/messageCode")
 const OrderService={
     addOrder:async(req,res)=>{   
        let user_id=getUserId(req)
-       req.body.user_id=user_id
+       req.body.user_id=user_id  
+       req.body.time=getTime   
        let result= await OrderController.addNoPay(req.body)
        res.send({result})
     },
@@ -31,7 +33,8 @@ const OrderService={
     reState:async(req,res)=>{
         let {state,order_id}=req.query
         let user_id=getUserId(req)
-        let result=await OrderController.reState(state,order_id,user_id)
+        let time=getTime
+        let result=await OrderController.reState(state,time,order_id,user_id)
         res.send(result)
     },
     findAll:async(req,res)=>{

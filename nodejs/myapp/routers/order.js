@@ -14,7 +14,7 @@ router.put('/change',(req,res)=>{
     OrderService.changeNum(req,res)
 })
 
-router.post('/delete',(req,res)=>{
+router.get('/delete',(req,res)=>{
     OrderService.delete(req,res)
 })
 

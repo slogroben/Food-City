@@ -9,6 +9,7 @@ var order=require('./routers/order')
 
 var urlname=require('url')
 const JWT = require('./util/jwt')
+const { stateCode } = require('./util/messageCode')
 
 
 
@@ -50,7 +51,7 @@ app.use((req,res,next)=>{
             next()
         }
         else{
-            res.status(401).send({errCode:-1,errInfo:'token过期'})
+            res.status(401).send({errCode:stateCode.tokenOutTime,errInfo:'token过期'})
         }
     }
     else{

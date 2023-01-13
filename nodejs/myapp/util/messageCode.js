@@ -4,6 +4,7 @@ const orderState={
     Pay:2
 }
 const stateCode={
+    tokenOutTime:-1,
     error:0,
     success:1
 }
