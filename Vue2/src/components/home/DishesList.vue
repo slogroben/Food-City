@@ -69,33 +69,21 @@ export default {
             const imgname=path.replace('D:\\study\\myproject\\project1\\src\\assets\\upload\\','')
             return require('@/assets/upload/'+imgname)
         },
-        addshopcart(dishes,event) {
-            if (this.user) {
-                let order = {
-                    order_title: dishes.dishes_title,
-                    order_img1: dishes.dishes_img1,
-                    order_price: dishes.dishes_price*1,
-                    order_num: 1,
-                    user_id: this.user.id,
-                    dishes_id:dishes.dishes_id
-                };
-                server({
-                    method: "post",
-                    url: "/order/add",
-                    data: qs.stringify(order)
-                }).then(response => {
+        addshopcart(dishes) {
+            this.$store.dispatch('addShopCart',dishes)
+            .then(
+                response => {
                     this.$message({
                         message: '加入购物车成功',
                         type: 'success'
                     });
                     this.$store.dispatch('getOrderNum')
-                }, error => {
-                    console.log(error);
-                });
-            }
-            else{
-                this.$router.push({name:'userlogin'})
-            }
+                },
+                error => {
+                if(error.response.data.errCode==this.$store.state.stateCode.tokenOutTime){
+                    this.$router.push({name:'userlogin'})
+                }
+            });
         },
         more(){
             this.$router.push({

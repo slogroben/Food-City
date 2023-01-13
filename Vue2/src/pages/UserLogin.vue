@@ -50,13 +50,6 @@
 </template>
 
 <script>
-// axios.interceptors.response.use(function (response) {
-//     const {authorization}=response.headers
-//     authorization&&localStorage.setItem('token',authorization)
-//     return response;
-//   }, function (error) {
-//     return Promise.reject(error);
-//   });
 import axios from 'axios'
 import qs from 'qs'
 import server from '@/utils/request'
@@ -101,18 +94,23 @@ import server from '@/utils/request'
                 this.loginmsg.username=this.username
                 this.loginmsg.password=this.password
                 if(this.clickflag==0){
-                    server({
-                        method:'post',
-                        url:'/user/login',
-                        data:qs.stringify(this.loginmsg),
-                    }).then(
+                    server.postReq('/user/login',qs.stringify(this.loginmsg))
+                    .then(
                         response=>{
                             this.$router.push({
                                 name:'homepage'
                             })
                         },
                         error=>{
-                            console.log("请求失败"+error.message);
+                            if(error.response.data.errCode==this.$store.state.stateCode.error){
+                                this.$message({
+                                message: '账号或者密码错误',
+                                type: 'error'
+                            });
+                            }
+                            else{
+                                console.log(error);
+                            }
                         }
                     )
                 }

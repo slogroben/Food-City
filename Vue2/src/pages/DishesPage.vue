@@ -49,8 +49,7 @@
 			<div class="operate_btn">
 				<button class="buy_btn" @click="topay">立即购买</button>
 				<button @click="addshopcart(dishes)" class="add_cart">加入购物车</button>
-			</div>
-            
+			</div>   
 	    </div>
         <div class="shopmsg fl" v-if="seller">
             <h2 style="text-align: center;background-color: antiquewhite;">商家信息</h2>
@@ -94,10 +93,8 @@ export default {
     },
     methods: {
         getSeller() {
-            axios({
-                method: "get",
-                url: "http://localhost:8080/seller/getSellerByID?shop_id=" + this.dishes.shop_id
-            }).then(response => {
+            server.getReq("/seller/getSellerByID?shop_id=" + this.dishes.shop_id)
+            .then(response => {
                 this.seller = response.data;
             }, error => {
                 console.log(error);
@@ -107,21 +104,20 @@ export default {
             this.$router.push({ name: "sellerpage", query: this.seller });
         },
         addshopcart(dishes) {
-            let order = {
-                order_title: this.dishes.dishes_title,
-                order_img1: this.dishes.dishes_img1,
-                order_price: this.dishes.dishes_price*this.order_num,
-                order_num: this.order_num,
-                dishes_id:dishes.dishes_id
-            };
-            server.postReq("/order/add",qs.stringify(order))
-            .then(response => {
-                this.$message({
-                    message: '加入购物车成功',
-                    type: 'success'
-                })
-            }, error => {
-                console.log(error);
+            dishes.dishes_num=this.order_num
+            this.$store.dispatch('addShopCart',dishes)
+            .then(
+                response => {
+                    this.$message({
+                        message: '加入购物车成功',
+                        type: 'success'
+                    });
+                    this.$store.dispatch('getOrderNum')
+                },
+                error => {
+                if(error.response.data.errCode==this.$store.state.stateCode.tokenOutTime){
+                    this.$router.push({name:'userlogin'})
+                }
             });
         },
         img(path){

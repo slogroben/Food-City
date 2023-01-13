@@ -2,22 +2,15 @@ import server from '@/utils/request'
 import axios from 'axios'
 import Vue from 'vue'
 import Vuex from 'vuex'
+import qs from 'qs'
+import router from '@/router'
 
 Vue.use(Vuex)
-
-function myAxios(method,url,headers,data){
-    method=method?method:'get'
-    return server({
-        method,
-        url,
-        headers,
-    })
-}
 
 const actions={
     //获取所有菜品信息
     getDisheList(context){
-        myAxios('get',"/dishe/getAllDishe")
+        server.getReq("/dishe/getAllDishe")
         .then(
             response=>{
                 context.commit('modifyDisheList',response.data)
@@ -29,7 +22,7 @@ const actions={
     },
     //获取所有商家信息
     getSellerList(context){
-        myAxios('get',"/seller/getAllSeller")
+        server.getReq("/seller/getAllSeller")
         .then(
             response=>{
                 context.commit('modifySellerList',response.data)
@@ -42,15 +35,15 @@ const actions={
     //校验用户
     checkUser(context,token){
         if(!token){return}
-        myAxios('get',"/user/check?token="+token)
+        server.getReq("/user/check?token="+token)
         .then(
             response=>{
                 const {user,token,state}=response.data
-                if(state==stateCode.success){
+                if(state==context.state.stateCode.success){
                     localStorage.setItem('token',token)
                     context.commit('modifyUser',user)
                 }
-                if(state==stateCode.error){
+                if(state==context.state.stateCode.error){
                     localStorage.removeItem('token')
                     context.commit('modifyUser',null)
                 }
@@ -61,8 +54,8 @@ const actions={
         )
     },
     //获取所有订单
-    getOrderList(context,token){
-        myAxios(null,'/order/find?state='+context.state.orderState.shopCart).then(
+    getOrderList(context){
+        server.getReq('/order/find?state='+context.state.orderState.shopCart).then(
             response=>{
                 context.commit('findOrder',response.data)
             },
@@ -94,6 +87,17 @@ const actions={
                         });
                     }
                 )
+    },
+    //添加到购物车
+    addShopCart(context,data) {
+        let order = {
+            order_title: data.dishes_title,
+            order_img1: data.dishes_img1,
+            order_price: data.dishes_price*1,
+            order_num: data.dishes_num?data.dishes_num:1,
+            dishes_id:data.dishes_id
+        };
+        return server.postReq("/order/add", qs.stringify(order))
     }
 }
 const mutations={
@@ -131,14 +135,15 @@ const state={
         shopCart:0,
         noPay:1,
         Pay:2
+    },
+
+    stateCode:{
+        tokenOutTime:-1,
+        error:0,
+        success:1
     }
 }
 const getters={
-}
-
-const stateCode={
-    error:0,
-    success:1
 }
 
 

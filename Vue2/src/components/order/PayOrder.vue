@@ -22,8 +22,7 @@
       </el-table-column>
       <el-table-column
         prop="order_price"
-        label="价格"
-        width="180">
+        label="价格">
       </el-table-column>
       <el-table-column
         prop="order_num"
@@ -35,9 +34,14 @@
             <el-tag v-if="o.row.order_state==$store.state.orderState.Pay">已支付</el-tag>
         </template>
       </el-table-column>
+      <el-table-column
+        prop="time"
+        label="下单时间"
+        width="160">
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="o">
-            <el-button type="text" @click="del(o.row)">删除订单</el-button>
+            <el-button type="text" @click="del(o.row)">删除记录</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -59,13 +63,7 @@ import server from '@/utils/request'
             getOrder(){
                 let state=this.$store.state.orderState.Pay
                 let token=localStorage.getItem('token')
-                server({
-                    method:"get",
-                    url:'/order/find?state='+state,
-                    headers:{
-                    'Authorization':token?'Bearer '+token:null,
-                }
-                })
+                server.getReq('/order/find?state='+state)
                 .then(
                 response=>{
                     this.orderList=response.data
@@ -80,14 +78,7 @@ import server from '@/utils/request'
                 return require('@/assets/upload/'+imgname)
             },
             del(o){
-                let token=localStorage.getItem('token')
-                server({
-                    method:'post',
-                    url:'/order/delete?order_id='+o.order_id,
-                    headers:{
-                    'Authorization':token?'Bearer '+token:null,
-                }
-                })
+                server.getReq('/order/delete?order_id='+o.order_id)
                 .then(
                 response=>{
                     this.getOrder()

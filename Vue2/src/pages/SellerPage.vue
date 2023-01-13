@@ -49,6 +49,7 @@
 import axios from 'axios'
 import qs from "qs"
 import Header from '@/components/home/Header'
+import server from '@/utils/request'
     export default {
     name: "SellerPage",
     data() {
@@ -59,10 +60,7 @@ import Header from '@/components/home/Header'
     },
     methods: {
         getDishes() {
-            axios({
-                method: "get",
-                url: "http://localhost:8080/dishe/getDisheByID?shop_id=" + this.seller.shop_id
-            }).then(response => {
+            server.getReq("/dishe/getDisheByID?shop_id=" + this.seller.shop_id).then(response => {
                 this.dishes = response.data;
                 if(this.dishes.length>10){
                     this.dishes.splice(10,this.dishes.length-10)
@@ -86,33 +84,21 @@ import Header from '@/components/home/Header'
             return require('@/assets/shopImg/'+imgname)
         },
         addshopcart(dishes) {
-            let user = JSON.parse(sessionStorage.getItem("user"));
-            if (user) {
-                let order = {
-                    order_title: dishes.dishes_title,
-                    order_img1: dishes.dishes_img1,
-                    order_price: dishes.dishes_price*1,
-                    order_num: 1,
-                    user_id: JSON.parse(sessionStorage.getItem("user")).id,
-                };
-                axios({
-                    method: "post",
-                    url: "http://localhost:8080/My/OrderAddServlet",
-                    data: qs.stringify(order)
-                }).then(response => {
+            this.$store.dispatch('addShopCart',dishes)
+            .then(
+                response => {
                     this.$message({
-                        showClose: true,
                         message: '加入购物车成功',
                         type: 'success'
                     });
-                }, error => {
-                    console.log(error);
-                });
-            }
-            else{
-                this.$router.push({name:'userlogin'})
-            }
-        }
+                    this.$store.dispatch('getOrderNum')
+                },
+                error => {
+                if(error.response.data.errCode==this.$store.state.stateCode.tokenOutTime){
+                    this.$router.push({name:'userlogin'})
+                }
+            });
+        },
     },
     mounted() {
         this.seller = this.$route.query;

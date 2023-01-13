@@ -6,19 +6,12 @@ const server=axios.create({
 })
 
 server.interceptors.request.use((config)=>{
-    if(config.url.includes('getAllDishe')){
-        return config
+    let excludeData=['getAllDishe','getAllSeller','login','register','getSellerByID','getDisheByID']
+    for (const s of excludeData) {
+        if(config.url.includes(s)){
+            return config
+        }
     }
-    if(config.url.includes('getAllSeller')){
-        return config
-    }
-    if(config.url.includes('login')){
-        return config
-    }
-    if(config.url.includes('register')){
-        return config
-    }
-    console.log(config);
     const token=localStorage.getItem('token')
     config.headers.Authorization='Barar '+token
     return config

@@ -36,15 +36,15 @@
                     <p style="font-weight: 900;color:white;font-family: STXinwei;">{{user.username}}</p>
                 </div>
                 <div>
-                    <div class="boxmin">
+                    <div class="boxmin" @click="$router.push({name:'shopcart'})">
                         <p>{{num.shopCart}}</p>
                         <el-button type="text">购物车</el-button>
                     </div>
-                    <div class="boxmin">
+                    <div class="boxmin" @click="$router.push({name:'orderhome'})">
                         <p>{{num.noPay}}</p>
                         <el-button type="text">待支付</el-button>
                     </div>
-                    <div class="boxmin">
+                    <div class="boxmin" @click="$router.push({name:'orderhome'})">
                         <p>{{num.Pay}}</p>
                         <el-button type="text">已支付</el-button>
                     </div>
@@ -125,7 +125,7 @@ import server from '@/utils/request'
                         this.text=response.data
                     }
                 )
-            }
+            },
         },
         mounted(){
             this.imgList=[
