@@ -30,8 +30,54 @@ const UserService={
         else{
             res.send({state:stateCode.error})
         }
+    },
+    DishesCollection:async (req,res)=>{
+        let user_id=getUserId(req)
+        req.query.user_id=user_id
+        let result=await UserContoller.DishesCollection(req.query)
+        if(result==stateCode.success){
+            res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
+    },
+    DishesCollectionState:async (req,res)=>{
+        let user_id=getUserId(req)
+        req.query.user_id=user_id
+        let result=await UserContoller.DishesCollectionState(req.query)
+        if(result){
+            res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
+    },
+    DishesCollectionDel:async (req,res)=>{
+        let user_id=getUserId(req)
+        req.query.user_id=user_id
+        let result=await UserContoller.DishesCollectionDel(req.query)
+        if(result==stateCode.success){
+            res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
+    },
+    DishesCollectionAll:async (req,res)=>{
+        let user_id=getUserId(req)
+        req.query.user_id=user_id
+        let list=await UserContoller.DishesCollectionAll(req.query)
+        if(list){
+            res.send(list)
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
     }
 }
 
-
+function getUserId(req){
+    return JWT.verify(req.header('Authorization')?.split(' ')[1]).id
+}
 module.exports=UserService

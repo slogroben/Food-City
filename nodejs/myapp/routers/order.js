@@ -18,7 +18,7 @@ router.get('/delete',(req,res)=>{
     OrderService.delete(req,res)
 })
 
-router.put('/restate',(req,res)=>{
+router.get('/restate',(req,res)=>{
     OrderService.reState(req,res)
 })
 

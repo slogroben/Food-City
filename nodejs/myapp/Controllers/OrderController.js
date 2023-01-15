@@ -5,8 +5,8 @@ const { orderState, stateCode } = require('../util/messageCode')
 
 const promisePool=mysql2.createPool(getConfig()).promise()
 const OrderController={
-    addNoPay:async(data)=>{
-        let arr=[data.order_title,data.order_img1,data.order_price,data.order_num,orderState.shopCart,data.user_id,data.dishes_id,data.time]
+    addOrder:async(data)=>{
+        let arr=[data.order_title,data.order_img1,data.order_price,data.order_num,data.order_state,data.user_id,data.dishes_id,data.time]
         try {
             await promisePool.query('INSERT INTO `order` VALUE(NULL,?,?,?,?,?,?,?,?);',arr)
             return stateCode.success

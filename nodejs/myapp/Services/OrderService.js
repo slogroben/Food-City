@@ -9,7 +9,7 @@ const OrderService={
        let user_id=getUserId(req)
        req.body.user_id=user_id  
        req.body.time=getTime   
-       let result= await OrderController.addNoPay(req.body)
+       let result= await OrderController.addOrder(req.body)
        res.send({result})
     },
     findOrder:async(req,res)=>{
