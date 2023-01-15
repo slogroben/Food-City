@@ -1,4 +1,6 @@
+import router from "@/router";
 import axios from "axios";
+import store from "@/store";
 
 const server=axios.create({
     baseURL:'http://192.168.43.175:8080/',
@@ -6,7 +8,7 @@ const server=axios.create({
 })
 
 server.interceptors.request.use((config)=>{
-    let excludeData=['getAllDishe','getAllSeller','login','register','getSellerByID','getDisheByID']
+    let excludeData=['getAllDishe','getAllSeller','login','register','getSellerByID','getDisheByID','DishesCollectionState']
     for (const s of excludeData) {
         if(config.url.includes(s)){
             return config
@@ -24,6 +26,13 @@ server.interceptors.response.use(function (response) {
     authorization&&localStorage.setItem('token',authorization)
     return response;
   }, function (error) {
+    if(error.response.config.url.split('/')[2].split('?')[0]=='check'){
+        return Promise.reject(error);
+    }
+      
+    if(error.response.data.errCode==store.state.stateCode.tokenOutTime){
+        router.push({name:'userlogin'})
+    }
     return Promise.reject(error);
   });
 

@@ -4,7 +4,7 @@
       v-if="orderList"
       :data="orderList"
       style="width: 100%">
-      <el-table-column width="180" label="图片">
+      <el-table-column width="150" label="图片">
         <template slot-scope="o">
             <el-image
                 v-if="o.row.order_img1"
@@ -15,11 +15,11 @@
             </el-image>
         </template>
       </el-table-column>
-      <el-table-column
-        prop="order_title"
-        width="180"
-        label="菜品名">
-      </el-table-column>
+        <el-table-column
+          prop="order_title"
+          width="180"
+          label="菜品名">
+        </el-table-column>
       <el-table-column
         prop="order_price"
         label="价格">

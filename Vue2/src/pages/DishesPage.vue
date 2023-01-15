@@ -49,7 +49,10 @@
 			<div class="operate_btn">
 				<button class="buy_btn" @click="topay">立即购买</button>
 				<button @click="addshopcart(dishes)" class="add_cart">加入购物车</button>
-			</div>   
+                <el-button v-if="!collectionflag" @click="collection" style="padding:0; margin-left:10px ; width: 45px; height: 45px;" circle><i style="font-size: 30px;" class="el-icon-star-off"></i></el-button>
+                <el-button v-if="collectionflag" @click="delCollection" style="background-color:yellow;padding:0; margin-left:10px ; width: 45px; height: 45px;" circle><i style="font-size: 30px;" class="el-icon-star-off"></i></el-button>
+
+            </div>   
 	    </div>
         <div class="shopmsg fl" v-if="seller">
             <h2 style="text-align: center;background-color: antiquewhite;">商家信息</h2>
@@ -88,7 +91,8 @@ export default {
             imgList:'',
             maximg:'',
             imgflag:'',
-            visible:false
+            visible:false,
+            collectionflag:false
         };
     },
     methods: {
@@ -104,8 +108,9 @@ export default {
             this.$router.push({ name: "sellerpage", query: this.seller });
         },
         addshopcart(dishes) {
+            dishes.order_state=this.$store.state.orderState.shopCart
             dishes.dishes_num=this.order_num
-            this.$store.dispatch('addShopCart',dishes)
+            this.$store.dispatch('addOrder',dishes)
             .then(
                 response => {
                     this.$message({
@@ -174,11 +179,8 @@ export default {
         mouseout(){
             this.imgflag=false
         },
-        restate(id,restate){
-            axios({
-                method:'get',
-                url:'http://localhost:8080/My/RestateServlet?order_id='+id+'&restate='+restate,
-            })
+        restate(id,state){
+            server.getReq('/order/restate?order_id='+id+'&state='+state)
             .then(
                 response=>{
                     console.log(response.data);            
@@ -188,59 +190,104 @@ export default {
                 }
             )
         },
-        addbuy(restate){
-            let user = JSON.parse(sessionStorage.getItem("user"));
-            if (user) {
-                let order = {
-                    order_title: this.dishes.dishes_title,
-                    order_img1: this.dishes.dishes_img1,
-                    order_price: this.dishes.dishes_price*this.order_num,
-                    order_num: this.order_num,
-                    restate:restate,
-                    user_id: JSON.parse(sessionStorage.getItem("user")).id,
-                    dishes_id:dishes.dishes_id
-                };
-                axios({
-                    method: "post",
-                    url: "http://localhost:8080/My/AddBuyServlet",
-                    data: qs.stringify(order)
-                }).then(response => {
-                    if(restate=='pay'){
-                        this.$message({
-                            message: '支付成功',
-                            type: 'success'
+        addbuy(state){
+                let dishes=this.dishes
+                dishes.order_state=state
+                dishes.dishes_num=this.order_num
+                return this.$store.dispatch('addOrder',dishes)
+        },
+        topay(){
+            if(localStorage.getItem('token')){this.visible=true}
+            else{
+                this.$router.push({name:'userlogin'})
+            }
+            
+        },
+        nopay(){
+            let state=this.$store.state.orderState.noPay
+            this.addbuy(state)
+            .then(
+                response=>{
+                    this.$message({
+                        message: '未支付',
+                        type: 'error'
                         });
-                    }
-                    else{
-                        this.$message({
-                            message: '未支付',
-                            type: 'error'
-                            });
-                    }
                     setTimeout(() => {
                         this.$router.push({
                             name:'orderhome'
                         })  
                     }, 1500);
-                    
-                }, error => {
-                    console.log(error);
-                });
-            }
-            else {
-                this.$router.push({ name: "userlogin" });
-            }
-        },
-        topay(){
-            this.visible=true
-        },
-        nopay(){
-            let restate="nopay"
-            this.addbuy(restate)
+                }
+            )
+
         },
         pay(){
-            let restate="pay"
-            this.addbuy(restate)
+            let state=this.$store.state.orderState.Pay
+            this.addbuy(state)
+            .then(
+                response=>{
+                    this.$message({
+                        message: '支付成功',
+                        type: 'success'
+                    });
+                    setTimeout(() => {
+                        this.$router.push({
+                            name:'orderhome'
+                        })  
+                    }, 1500);
+                }
+            )
+        },
+        collection(){
+            server.getReq('/user/DishesCollection?dishes_id='+this.dishes.dishes_id+'&dishes_title='+this.dishes.dishes_title+'&dishes_img1='+this.dishes.dishes_img1)
+            .then(
+                response=>{
+                    if(response.data.state==this.$store.state.stateCode.success){
+                        this.$message({
+                            message: '收藏成功',
+                            type: 'success'
+                        });
+                        this.collectionflag=true
+                    }
+                },
+                error=>{
+                    console.log(error);
+                }
+            )
+        },
+        delCollection(){
+            server.getReq('/user/DishesCollectionDel?dishes_id='+this.dishes.dishes_id)
+            .then(
+                response=>{
+                    if(response.data.state==this.$store.state.stateCode.success){
+                        this.$message({
+                            message: '取消收藏',
+                            type: 'error'
+                        });
+                        this.collectionflag=false
+                    }
+                },
+                error=>{
+                    console.log(error);
+                }
+            )
+        }
+        ,
+        collectionState(){
+            server.getReq('/user/DishesCollectionState?dishes_id='+this.dishes.dishes_id)
+            .then(
+                response=>{
+                    if(response.data.state==this.$store.state.stateCode.success){
+                        this.collectionflag=true
+                    }
+                    if(response.data.state==this.$store.state.stateCode.error){
+                        this.collectionflag=false
+                    }          
+                },
+                error=>{
+                    console.log(error);
+                }
+            )
         }
         
     },
@@ -255,6 +302,7 @@ export default {
         ]
         this.maximg=this.imgList[0]
         this.getSeller();
+        this.collectionState();
     },
     components: { Header }
 }
@@ -347,7 +395,7 @@ li{
 .operate_btn{
     height:40px;
     margin-top:35px;
-    font-size:0;
+    /* font-size:0; */
     position:relative;
 }
 .operate_btn .buy_btn,.operate_btn .add_cart{

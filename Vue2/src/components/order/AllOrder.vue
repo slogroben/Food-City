@@ -4,7 +4,7 @@
       v-if="orderList"
       :data="orderList"
       style="width: 100%">
-      <el-table-column width="180" label="图片">
+      <el-table-column width="150" label="图片">
         <template slot-scope="o">
             <el-image
                 v-if="o.row.order_img1"
@@ -43,7 +43,7 @@
         <template slot-scope="o">
             <div v-if="o.row.order_state==$store.state.orderState.noPay">
                 <li>
-                    <el-button type="text" @click="del(o.row)">立即支付</el-button>
+                    <el-button type="text" @click="topay(o.row)">立即支付</el-button>
                 </li>
                 <li>
                     <el-button type="text" @click="del(o.row)">取消订单</el-button>
@@ -53,6 +53,14 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog title="支付" :visible.sync="visible" center>
+        <el-button plain>支付宝支付</el-button>
+        <el-button plain>微信支付</el-button>
+        <span slot="footer" class="dialog-footer">
+            <el-button type="danger" @click="nopay">取 消</el-button>
+            <el-button type="primary" @click="pay">确 定</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -65,6 +73,8 @@ import server from '@/utils/request'
         data(){
             return{
                 orderList:'',
+                visible:false,
+                order_id:''
             }
         },
         methods:{
@@ -92,6 +102,27 @@ import server from '@/utils/request'
                     console.log(error);
                 }
             )
+            },
+            topay(o){
+                this.order_id=o.order_id
+                this.visible=true
+            },
+            nopay(){
+                this.visible=false
+            },
+            pay(){
+                let state=this.$store.state.orderState.Pay
+                server.getReq('/order/restate?order_id='+this.order_id+'&state='+state)
+                .then(
+                    response=>{
+                        this.$message({
+                            message: '支付成功',
+                            type: 'success'
+                        });
+                        this.getOrder()
+                        this.visible=false
+                    }
+                )
             }
         },
         mounted(){

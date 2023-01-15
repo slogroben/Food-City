@@ -102,6 +102,10 @@ import server from '@/utils/request'
         },
         computed:{
             user(){
+                if(this.$store.state.user){
+                    this.getText()
+                    this.$store.dispatch('getOrderNum')
+                }
                 return this.$store.state.user
             },
             num(){
@@ -136,8 +140,7 @@ import server from '@/utils/request'
                 require("@/assets/swip/5.jpg"),
                 require("@/assets/swip/6.jpg"),
             ]
-            this.getText()
-            this.$store.dispatch('getOrderNum')
+            
         }
     }
 </script>

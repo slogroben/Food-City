@@ -53,24 +53,6 @@ export default {
         }
     },
     methods:{
-        // getSellerList(){
-        //     axios({
-        //         method:'get',
-        //         url:"http://localhost:8080/seller/getAllSeller"
-        //     }).then(
-        //         response=>{
-        //             this.sellerList=response.data;
-        //             this.showSellerList=this.sellerList
-        //             if(this.showSellerList.length>10){
-        //                 this.showSellerList.splice(10,this.showSellerList.length-10)
-        //             }
-        //             this.loading=false
-        //         },
-        //         error=>{
-        //             this.getSellerList()
-        //         }
-        //     )
-        // },
         sellermsg(s){
             this.$router.push({
                 name:'sellerpage',

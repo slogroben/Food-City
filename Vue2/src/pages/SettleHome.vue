@@ -53,6 +53,7 @@ import Header from '@/components/home/Header';
 import Footer from '@/components/home/Footer';
 import axios from 'axios';
 import qs from "qs"
+import server from '@/utils/request';
 export default {
   components: { Header, Footer },
     name:'SettleHome',
@@ -70,13 +71,7 @@ export default {
         },
         restate(id,restate){
                 let token=localStorage.getItem('token')
-                axios({
-                    method:'put',
-                    url:'http://localhost:8080/order/restate?order_id='+id+'&state='+restate,
-                    headers:{
-                        'Authorization':token?'Bearer '+token:null,
-                    }
-                })
+                server.getReq('http://localhost:8080/order/restate?order_id='+id+'&state='+restate)
                 .then(
                     response=>{          
                     },

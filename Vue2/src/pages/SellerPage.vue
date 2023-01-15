@@ -15,7 +15,7 @@
         </el-descriptions>
     </div>
     <div class="swip" v-if="dishes.length!=0">
-        <el-carousel v-if="dishes" :interval="5000" arrow="always" height="500px">
+        <el-carousel v-if="dishes" :interval="5000" arrow="always" type="card" height="400px" width="200px">
             <el-carousel-item v-for="d in dishes" :key="d.dishes_id" >
                     <el-image
                         @click="dishespage(d)"
@@ -84,7 +84,8 @@ import server from '@/utils/request'
             return require('@/assets/shopImg/'+imgname)
         },
         addshopcart(dishes) {
-            this.$store.dispatch('addShopCart',dishes)
+            dishes.order_state=this.$store.state.orderState.shopCart
+            this.$store.dispatch('addOrder',dishes)
             .then(
                 response => {
                     this.$message({

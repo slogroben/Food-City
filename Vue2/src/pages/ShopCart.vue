@@ -105,13 +105,7 @@ export default {
     methods:{
         del(order){
             let token=localStorage.getItem('token')
-            server({
-                method:'post',
-                url:'/order/delete?order_id='+order.order_id,
-                headers:{
-                'Authorization':token?'Bearer '+token:null,
-            }
-            }).then(
+            server.getReq('/order/delete?order_id='+order.order_id).then(
             response=>{
                 this.updateOrder()
                 this.checkedflag=false
@@ -122,7 +116,6 @@ export default {
         )
         },
         choosedel(){
-            console.log(this.orderList);
             let delList=this.orderList.filter(o => {
                    return o.isChecked==true
             })

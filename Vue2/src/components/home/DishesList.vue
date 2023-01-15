@@ -42,8 +42,6 @@ export default {
     name:'DishesList',
     data(){
         return{
-            // dishesList:'',
-            // showdishesList:'',
             loading:true,
             btnloading:false
         }
@@ -70,7 +68,8 @@ export default {
             return require('@/assets/upload/'+imgname)
         },
         addshopcart(dishes) {
-            this.$store.dispatch('addShopCart',dishes)
+            dishes.order_state=this.$store.state.orderState.shopCart
+            this.$store.dispatch('addOrder',dishes)
             .then(
                 response => {
                     this.$message({
@@ -80,9 +79,7 @@ export default {
                     this.$store.dispatch('getOrderNum')
                 },
                 error => {
-                if(error.response.data.errCode==this.$store.state.stateCode.tokenOutTime){
-                    this.$router.push({name:'userlogin'})
-                }
+                console.log(error);
             });
         },
         more(){

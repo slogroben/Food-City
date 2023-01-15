@@ -49,7 +49,7 @@ const actions={
                 }
             },
             error=>{
-                console.log(error);
+                // console.log(error);
             }
         )
     },
@@ -89,13 +89,14 @@ const actions={
                 )
     },
     //添加到购物车
-    addShopCart(context,data) {
+    addOrder(context,data) {
         let order = {
             order_title: data.dishes_title,
             order_img1: data.dishes_img1,
-            order_price: data.dishes_price*1,
+            order_price: data.dishes_price*(data.dishes_num?data.dishes_num:1),
             order_num: data.dishes_num?data.dishes_num:1,
-            dishes_id:data.dishes_id
+            dishes_id:data.dishes_id,
+            order_state:data.order_state
         };
         return server.postReq("/order/add", qs.stringify(order))
     }

@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '/src/pages/Home'
 import UserRegister from '/src/pages/UserRegister'
 import UserLogin from '/src/pages/UserLogin'
+
 import SellerRegister from '/src/pages/SellerRegister'
 import SellerRegisterMessage from '/src/pages/SellerRegisterMessage'
 import SellerLogin from '/src/pages/SellerLogin'
