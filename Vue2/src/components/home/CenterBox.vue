@@ -13,7 +13,7 @@
             </el-carousel>
         </div>
         
-        <div class="userlogin">
+        <div class="userlogin" v-if="boxflag">
             <div v-if="!user">
                 <div>
                     <el-avatar style="margin:40px 0 0 80px;" :size="70" :src="circleUrl"></el-avatar>
@@ -27,7 +27,7 @@
                     <button @click="register">注册</button>
                 </div>
             </div>
-            <div v-if="user" >
+            <div v-if="user">
                 <div class="headerimg">
                     <el-avatar :size="50" :src="circleUrl"></el-avatar>
                 </div>
@@ -40,18 +40,18 @@
                         <p>{{num.shopCart}}</p>
                         <el-button type="text">购物车</el-button>
                     </div>
-                    <div class="boxmin" @click="$router.push({name:'orderhome'})">
+                    <div class="boxmin" @click="$router.push({name:'orderhome',query:{first:'1',activeName:'1-2'}})">
                         <p>{{num.noPay}}</p>
                         <el-button type="text">待支付</el-button>
                     </div>
-                    <div class="boxmin" @click="$router.push({name:'orderhome'})">
+                    <div class="boxmin" @click="$router.push({name:'orderhome',query:{first:'1',activeName:'1-3'}})">
                         <p>{{num.Pay}}</p>
                         <el-button type="text">已支付</el-button>
                     </div>
                 </div>
                 <div>
                     <div class="iconbox">
-                        <label>
+                        <label @click="$router.push({name:'orderhome',query:{first:'2',activeName:'2-1'}})">
                             <i class="el-icon-star-off"></i>
                             <p>菜品收藏</p>
                         </label>
@@ -63,24 +63,26 @@
                         </label>
                     </div>
                     <div class="iconbox">
-                        <label>
+                        <label @click="$router.push({name:'orderhome',query:{first:'2',activeName:'2-2'}})">
                             <i class="el-icon-s-shop"></i>
                             <p>店铺收藏</p>
                         </label>
                     </div>
                     <div class="iconbox">
-                        <label>
+                        <label @click="myMoney">
                             <i class="el-icon-wallet"></i>
                             <p>我的钱包</p>
                         </label>
                     </div>
                 </div>
-                <div class="text" v-if="text">
-                    <h4 style="color:white"><i class="el-icon-chat-dot-square"></i>今日语录</h4>
-                    <p style="color:white;font-family: STKaiti;">{{text}}</p>
-                </div>
-                <div class="text" v-if="!text">
-                    <p style="color:red">加载错误，请检查网络</p>
+                <div>
+                    <div class="text">
+                        <h4 style="color:white"><i class="el-icon-chat-dot-square"></i>今日语录</h4>
+                        <div v-if="textflag" @click="getText">
+                            <p v-if="text" style="color:white;font-family: STKaiti;">{{text}}</p>
+                            <p v-if="!text" style="color:red;font-family: STKaiti;">加载错误，请检查网络</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -98,6 +100,7 @@ import server from '@/utils/request'
                 text:'',
                 circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
                 imgList:'',
+                textflag:false,
             }
         },
         computed:{
@@ -110,6 +113,12 @@ import server from '@/utils/request'
             },
             num(){
                 return this.$store.state.num
+            },
+            boxflag(){
+                if(this.$store.state.user){
+                    return true
+                }
+                return false     
             }
         }
         ,
@@ -127,9 +136,20 @@ import server from '@/utils/request'
                 }).then(
                     response=>{
                         this.text=response.data
+                        this.textflag=true
+                    },
+                    error=>{
+                        this.text=false
+                        this.textflag=true
                     }
                 )
             },
+            myMoney(){
+                this.$message({
+                        message: '功能未实现，敬请期待',
+                        type: 'error'
+                    });
+            }
         },
         mounted(){
             this.imgList=[

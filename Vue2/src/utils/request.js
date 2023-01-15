@@ -8,7 +8,7 @@ const server=axios.create({
 })
 
 server.interceptors.request.use((config)=>{
-    let excludeData=['getAllDishe','getAllSeller','login','register','getSellerByID','getDisheByID','DishesCollectionState']
+    let excludeData=['getAllDishe','getAllSeller','login','register','getSellerByID','getDisheByID']
     for (const s of excludeData) {
         if(config.url.includes(s)){
             return config
@@ -26,9 +26,13 @@ server.interceptors.response.use(function (response) {
     authorization&&localStorage.setItem('token',authorization)
     return response;
   }, function (error) {
-    if(error.response.config.url.split('/')[2].split('?')[0]=='check'){
-        return Promise.reject(error);
+    let exlist=['DishesCollectionState','ShopCollectionState','check']
+    for (const e of exlist) {
+        if(error.response.config.url.split('/')[2].split('?')[0]==e){
+            return Promise.reject(error);
+        }  
     }
+    
       
     if(error.response.data.errCode==store.state.stateCode.tokenOutTime){
         router.push({name:'userlogin'})

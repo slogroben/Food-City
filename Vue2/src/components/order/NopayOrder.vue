@@ -16,9 +16,11 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="order_title"
         width="180"
         label="菜品名">
+        <template slot-scope="o">
+            <div @click="$emit('godishe',o.row)">{{o.row.order_title}}</div>
+        </template>
       </el-table-column>
       <el-table-column
         prop="order_price"
@@ -95,6 +97,10 @@ import server from '@/utils/request'
                 server.getReq('/order/delete?order_id='+o.order_id)
                 .then(
                 response=>{
+                    this.$message({
+                                message: '取消订单成功',
+                                type: 'success'
+                            });
                     this.getOrder()
                 },
                 error=>{

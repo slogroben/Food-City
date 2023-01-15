@@ -43,12 +43,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="o">
-            <li>
-                <el-button type="text" @click="finish(o.row)">立即收货</el-button>
-            </li>
-            <li>
-                <el-button type="text" @click="del(o.row)">取消订单</el-button>
-            </li>  
+            <el-button type="text" @click="del(o.row)">删除记录</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -60,7 +55,7 @@ import axios from 'axios'
 import qs from "qs"
 import server from '@/utils/request'
     export default {
-        name:'PayOrder',
+        name:'FinishOrder',
         data(){
             return{
                 orderList:'',
@@ -68,8 +63,7 @@ import server from '@/utils/request'
         },
         methods:{
             getOrder(){
-                let state=this.$store.state.orderState.Pay
-                let token=localStorage.getItem('token')
+                let state=this.$store.state.orderState.finish
                 server.getReq('/order/find?state='+state)
                 .then(
                 response=>{
@@ -89,32 +83,16 @@ import server from '@/utils/request'
                 .then(
                 response=>{
                   this.$message({
-                                message: '删除成功',
-                                type: 'success'
-                            });
-                            this.getOrder()
+                    message: '取消订单成功',
+                        type: 'success'
+                    });
                     this.getOrder()
                 },
                 error=>{
                     console.log(error);
                 }
             )
-            },
-            finish(o){
-                let state=this.$store.state.orderState.finish
-                server.getReq('/order/restate?order_id='+o.order_id+'&state='+state)
-                .then(
-                    response=>{
-                        this.$message({
-                            message: '收货成功',
-                            type: 'success'
-                        });
-                        this.getOrder()
-                        this.visible=false
-                    }
-                )
             }
-
         },
         mounted(){
             this.getOrder()

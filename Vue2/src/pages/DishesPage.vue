@@ -51,7 +51,6 @@
 				<button @click="addshopcart(dishes)" class="add_cart">加入购物车</button>
                 <el-button v-if="!collectionflag" @click="collection" style="padding:0; margin-left:10px ; width: 45px; height: 45px;" circle><i style="font-size: 30px;" class="el-icon-star-off"></i></el-button>
                 <el-button v-if="collectionflag" @click="delCollection" style="background-color:yellow;padding:0; margin-left:10px ; width: 45px; height: 45px;" circle><i style="font-size: 30px;" class="el-icon-star-off"></i></el-button>
-
             </div>   
 	    </div>
         <div class="shopmsg fl" v-if="seller">

@@ -135,7 +135,8 @@ const state={
     orderState:{
         shopCart:0,
         noPay:1,
-        Pay:2
+        Pay:2,
+        finish:3
     },
 
     stateCode:{

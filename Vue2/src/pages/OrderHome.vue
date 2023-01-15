@@ -10,7 +10,7 @@
           @select="handleSelect">
           <el-submenu index="1">
             <template slot="title">
-              <span>我的订单</span>
+              <span><i class="el-icon-tickets"></i>我的订单</span>
             </template>
               <el-menu-item index="1-1">全部订单</el-menu-item>
               <el-menu-item index="1-2">待付款</el-menu-item>
@@ -19,7 +19,7 @@
           </el-submenu>
           <el-submenu index="2">
             <template slot="title">
-              <span>我的收藏</span>
+              <span><i class="el-icon-star-off"></i>我的收藏</span>
             </template>
               <el-menu-item index="2-1">菜品收藏</el-menu-item>
               <el-menu-item index="2-2">店铺收藏</el-menu-item>
@@ -29,7 +29,7 @@
       <div class="right"> 
         <el-tabs v-model="first">
             <el-tab-pane label="我的订单" name="1">
-              <el-tabs v-model="activeName1" type="border-card">
+              <el-tabs v-model="activeName" type="border-card">
                   <el-tab-pane label="全部订单" name="1-1">
                     <AllOrder @godishe="godishe"></AllOrder>
                   </el-tab-pane>
@@ -40,17 +40,17 @@
                     <PayOrder @godishe="godishe"></PayOrder>
                   </el-tab-pane>
                   <el-tab-pane label="退款/售后" name="1-4">
-                    <PayOrder @godishe="godishe"></PayOrder>
+                    <FinishOrder @godishe="godishe"></FinishOrder>
                   </el-tab-pane>
               </el-tabs>
             </el-tab-pane>
-            <el-tab-pane label="我的收藏" name="2" >
-              <el-tabs v-model="activeName2" type="border-card">
+            <el-tab-pane label="我的收藏" name="2">
+              <el-tabs v-model="activeName" type="border-card">
                 <el-tab-pane label="菜品收藏" name="2-1">
                   <DishesCollection @godishe="godishe"></DishesCollection>
                 </el-tab-pane>
                 <el-tab-pane label="店铺收藏" name="2-2">
-                  <NopayOrder @godishe="godishe"></NopayOrder>
+                  <ShopCollection @goshop="goshop"></ShopCollection>
                 </el-tab-pane>
               </el-tabs>
             </el-tab-pane>
@@ -60,32 +60,41 @@
 </template>
 
 <script>
+import server from '@/utils/request';
+
 import Header from '@/components/home/Header';
 import Footer from '@/components/home/Footer';
 import AllOrder from '@/components/order/AllOrder';
 import NopayOrder from '../components/order/NopayOrder.vue';
 import PayOrder from '@/components/order/PayOrder.vue';
 import DishesCollection from '@/components/order/DishesCollection.vue';
-import server from '@/utils/request';
+import ShopCollection from '@/components/order/ShopCollection.vue';
+import FinishOrder from '@/components/order/FinishOrder.vue';
+
 export default {
     name: "OrderHome",
     data(){
         return{
-          activeName1:"1-1",
-          activeName2:"2-1",
-          activeIndex2: '1',
+          first:'1',
+          activeName:'1-1',
           orderflag:'',
-          first:'1'
+          
         }
     },
-    components: { Header, Footer, AllOrder, NopayOrder, PayOrder ,DishesCollection},
+    watch:{
+      first:function(params){
+        params=='2'?this.activeName='2-1':this.activeName='1-1'
+      }
+    }
+    ,
+    components: { Header, Footer, AllOrder, NopayOrder, PayOrder, DishesCollection, ShopCollection, FinishOrder },
     methods:{
       handleSelect(key, keyPath) {
           this.first=key.split('-')[0]
-          this.activeName1=key
-          this.activeName2=key
+          this.activeName=key
       },
       godishe(o){
+        console.log(o);
           let {dishes_id}=o
           server.getReq('/dishe/getDisheByDisheID?dishes_id='+dishes_id)
           .then(
@@ -96,6 +105,24 @@ export default {
                   })
               }
           )
+      },
+      goshop(o){
+          let {shop_id}=o
+          server.getReq('/seller/getSellerByID?shop_id='+shop_id)
+          .then(
+              response=>{
+                  this.$router.push({
+                      name:'sellerpage',
+                      query:response.data
+                  })
+              }
+          )
+      },
+    },
+    mounted(){
+      if(Object.keys(this.$route.query).length!=0){
+        this.first=this.$route.query.first
+        this.activeName=this.$route.query.activeName
       }
     }
 }

@@ -16,9 +16,11 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="order_title"
         width="180"
         label="菜品名">
+        <template slot-scope="o">
+            <div @click="$emit('godishe',o.row)">{{o.row.order_title}}</div>
+        </template>
       </el-table-column>
       <el-table-column
         prop="order_price"
@@ -32,6 +34,7 @@
         <template slot-scope="o">
             <el-tag v-if="o.row.order_state==$store.state.orderState.noPay" type="danger">未支付</el-tag>
             <el-tag v-if="o.row.order_state==$store.state.orderState.Pay">已支付</el-tag>
+            <el-tag v-if="o.row.order_state==$store.state.orderState.finish" type="info">已收货</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -46,7 +49,7 @@
                     <el-button type="text" @click="topay(o.row)">立即支付</el-button>
                 </li>
                 <li>
-                    <el-button type="text" @click="del(o.row)">取消订单</el-button>
+                    <el-button type="text" @click="del(o.row,'取消成功')">取消订单</el-button>
                 </li> 
             </div>
             <el-button v-if="o.row.order_state==$store.state.orderState.Pay" type="text" @click="del(o.row)">删除记录</el-button>
@@ -92,11 +95,18 @@ import server from '@/utils/request'
                 const imgname=path.replace('D:\\study\\myproject\\project1\\src\\assets\\upload\\','')
                 return require('@/assets/upload/'+imgname)
             },
-            del(o){
+            del(o,message){
+                message=message?message:'删除成功'
                 server.getReq('/order/delete?order_id='+o.order_id)
                 .then(
                 response=>{
-                    this.getOrder()
+                    if(response.data.state==this.$store.state.stateCode.success){
+                            this.$message({
+                                message: message,
+                                type: 'error'
+                            });
+                            this.getOrder()
+                        }
                 },
                 error=>{
                     console.log(error);

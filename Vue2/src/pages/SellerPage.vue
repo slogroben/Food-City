@@ -13,6 +13,10 @@
                 <el-tag size="small">{{seller.shoptype}}</el-tag>
             </el-descriptions-item>
         </el-descriptions>
+        <div>
+            <el-button v-if="!collectionflag" @click="collection" style="padding:0; margin-left:10px ; width: 45px; height: 45px;" circle><i style="font-size: 30px;" class="el-icon-star-off"></i></el-button>
+            <el-button v-if="collectionflag" @click="delCollection" style="background-color:yellow;padding:0; margin-left:10px ; width: 45px; height: 45px;" circle><i style="font-size: 30px;" class="el-icon-star-off"></i></el-button>
+        </div>
     </div>
     <div class="swip" v-if="dishes.length!=0">
         <el-carousel v-if="dishes" :interval="5000" arrow="always" type="card" height="400px" width="200px">
@@ -56,6 +60,7 @@ import server from '@/utils/request'
         return {
             seller: "",
             dishes: "",
+            collectionflag:false,
         };
     },
     methods: {
@@ -100,10 +105,62 @@ import server from '@/utils/request'
                 }
             });
         },
+        collection(){
+            server.getReq('/user/ShopCollection?shop_id='+this.seller.shop_id+'&shopname='+this.seller.shopname+'&imgurl='+this.seller.imgurl)
+            .then(
+                response=>{
+                    if(response.data.state==this.$store.state.stateCode.success){
+                        this.$message({
+                            message: '收藏成功',
+                            type: 'success'
+                        });
+                        this.collectionflag=true
+                    }
+                },
+                error=>{
+                    console.log(error);
+                }
+            )
+        },
+        delCollection(){
+            server.getReq('/user/ShopCollectionDel?shop_id='+this.seller.shop_id)
+            .then(
+                response=>{
+                    if(response.data.state==this.$store.state.stateCode.success){
+                        this.$message({
+                            message: '取消收藏',
+                            type: 'error'
+                        });
+                        this.collectionflag=false
+                    }
+                },
+                error=>{
+                    console.log(error);
+                }
+            )
+        }
+        ,
+        collectionState(){
+            server.getReq('/user/ShopCollectionState?shop_id='+this.seller.shop_id)
+            .then(
+                response=>{
+                    if(response.data.state==this.$store.state.stateCode.success){
+                        this.collectionflag=true
+                    }
+                    if(response.data.state==this.$store.state.stateCode.error){
+                        this.collectionflag=false
+                    }          
+                },
+                error=>{
+                    console.log(error);
+                }
+            )
+        }
     },
     mounted() {
         this.seller = this.$route.query;
         this.getDishes();
+        this.collectionState()
     },
     components: { Header }
 }

@@ -1,25 +1,25 @@
 <template>
   <div>
     <el-table
-      v-if="disheslist"
-      :data="disheslist"
+      v-if="shoplist"
+      :data="shoplist"
       style="width: 100%">
       <el-table-column width="300" label="图片">
         <template slot-scope="d">
             <el-image
-                v-if="d.row.dishes_img1"
+                v-if="d.row.imgurl"
                 style="width: 100px; height: 100px"
-                :src="img(d.row.dishes_img1)"
-                @click="$emit('godishe',d.row)"
+                :src="img1(d.row.imgurl)"
+                @click="$emit('goshop',d.row)"
                 fit="cover">
             </el-image>
         </template>
       </el-table-column>
       <el-table-column
         width="300"
-        label="菜品名">
-        <template slot-scope="o">
-            <div @click="$emit('godishe',o.row)">{{o.row.order_title}}</div>
+        label="店铺名">
+        <template slot-scope="s">
+            <div @click="$emit('goshop',s.row)">{{s.row.shopname}}</div>
         </template>
       </el-table-column>
       <el-table-column label="操作" >
@@ -36,31 +36,31 @@ import axios from 'axios'
 import qs from "qs"
 import server from '@/utils/request'
     export default {
-        name:'DishesCollection',
+        name:'ShopCollection',
         data(){
             return{
-                disheslist:'',
+                shoplist:'',
                 visible:false,
                 order_id:''
             }
         },
         methods:{
-            getDishesList(){
-                server.getReq('/user/DishesCollectionAll').then(
-                response=>{        
-                    this.disheslist=response.data
+            getShopList(){
+                server.getReq('/user/ShopCollectionAll').then(
+                response=>{     
+                    this.shoplist=response.data
                 },
                 error=>{
                     console.log(error);
                 }
             )
             },
-            img(path){
-                const imgname=path.replace('D:\\study\\myproject\\project1\\src\\assets\\upload\\','')
-                return require('@/assets/upload/'+imgname)
+            img1(path){
+            const imgname=path.replace('D:\\study\\myproject\\project1\\src\\assets\\shopImg\\','')
+            return require('@/assets/shopImg/'+imgname)
             },
             cancel(d){
-                server.getReq('/user/DishesCollectionDel?dishes_id='+d.dishes_id)
+                server.getReq('/user/ShopCollectionDel?shop_id='+d.shop_id)
                 .then(
                     response=>{
                         if(response.data.state==this.$store.state.stateCode.success){
@@ -68,7 +68,7 @@ import server from '@/utils/request'
                                 message: '取消收藏成功',
                                 type: 'success'
                             });
-                            this.getDishesList()
+                            this.getShopList()
                         }
                     },
                     error=>{
@@ -78,7 +78,7 @@ import server from '@/utils/request'
             },
         },
         mounted(){
-            this.getDishesList()
+            this.getShopList()
         }
     }
 </script>
