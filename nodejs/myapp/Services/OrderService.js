@@ -1,7 +1,7 @@
 const OrderController = require("../Controllers/OrderController")
 const getTime = require("../util/getTime")
 const JWT = require("../util/jwt")
-const { orderState } = require("../util/messageCode")
+const { orderState, stateCode } = require("../util/messageCode")
 
 
 const OrderService={
@@ -28,7 +28,12 @@ const OrderService={
         let {order_id}=req.query
         let user_id=getUserId(req)
         let result=await OrderController.delete(order_id,user_id)
-        res.send(result)
+        if(result){
+            res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
     },
     reState:async(req,res)=>{
         let {state,order_id}=req.query

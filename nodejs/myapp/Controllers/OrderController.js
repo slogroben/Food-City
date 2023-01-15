@@ -27,8 +27,8 @@ const OrderController={
     findAll:async(user_id)=>{
         try {
             let data=await promisePool.query(
-                'SELECT * FROM `order` WHERE order_state=? AND user_id=? UNION SELECT * FROM `order` WHERE order_state=? AND user_id=?;'
-                ,[orderState.Pay,user_id,orderState.noPay,user_id])
+                'SELECT * FROM `order` WHERE order_state!=? AND user_id=?;'
+                ,[orderState.shopCart,user_id])
             return data[0]
         } catch (error) {
             console.log(error);
@@ -47,10 +47,10 @@ const OrderController={
     delete:async(order_id,user_id)=>{
         try {
             let result=await promisePool.query('delete from `order` where order_id=? and user_id=?',[order_id,user_id])
-            return result
+            return stateCode.success
         } catch (error) {
             console.log(error);
-            return error
+            return stateCode.error
         }
     },
     reState:async(state,time,order_id,user_id)=>{

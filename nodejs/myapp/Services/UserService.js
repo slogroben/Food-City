@@ -74,6 +74,51 @@ const UserService={
         else{
             res.send({state:stateCode.error})
         }
+    },
+
+    ShopCollection:async (req,res)=>{
+        let user_id=getUserId(req)
+        req.query.user_id=user_id
+        let result=await UserContoller.ShopCollection(req.query)
+        if(result==stateCode.success){
+            res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
+    },
+    ShopCollectionState:async (req,res)=>{
+        let user_id=getUserId(req)
+        req.query.user_id=user_id
+        let result=await UserContoller.ShopCollectionState(req.query)
+        if(result){
+            res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
+    },
+    ShopCollectionDel:async (req,res)=>{
+        let user_id=getUserId(req)
+        req.query.user_id=user_id
+        let result=await UserContoller.ShopCollectionDel(req.query)
+        if(result==stateCode.success){
+            res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
+    },
+    ShopCollectionAll:async (req,res)=>{
+        let user_id=getUserId(req)
+        req.query.user_id=user_id
+        let list=await UserContoller.ShopCollectionAll(req.query)
+        if(list){
+            res.send(list)
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
     }
 }
 

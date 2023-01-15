@@ -52,6 +52,46 @@ const UserContoller={
             return stateCode.error
         }
     }
+    ,
+    ShopCollection:async(data)=>{
+        let {shop_id,user_id,shopname,imgurl}=data
+        try {
+            let result=await promisePool.query('insert into `shop_collection` value(null,?,?,?,?)',[shop_id,user_id,shopname,imgurl])
+            return stateCode.success
+        } catch (error) {
+            return stateCode.error
+        }
+    },
+    ShopCollectionState:async(data)=>{
+        let {shop_id,user_id}=data
+        try {
+            let result=await promisePool.query('select * from `shop_collection` where shop_id=? and user_id=? ',[shop_id,user_id])
+            return result[0][0]
+        } catch (error) {
+            console.log(error);
+            return stateCode.error
+        }
+    },
+    ShopCollectionDel:async(data)=>{
+        let {shop_id,user_id}=data
+        try {
+            let result=await promisePool.query('delete from `shop_collection` where shop_id=? and user_id=? ',[shop_id,user_id])
+            return stateCode.success
+        } catch (error) {
+            console.log(error);
+            return stateCode.error
+        }
+    },
+    ShopCollectionAll:async(data)=>{
+        let {shop_id,user_id}=data
+        try {
+            let list=await promisePool.query('select * from `shop_collection` where user_id=?',user_id)
+            return list[0]
+        } catch (error) {
+            console.log(error);
+            return stateCode.error
+        }
+    }
 }
 
 module.exports=UserContoller
