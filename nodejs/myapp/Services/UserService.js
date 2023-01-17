@@ -1,4 +1,8 @@
 const UserContoller = require("../Controllers/UserContoller")
+const DisheController = require("../Controllers/DisheController")
+const OrderController = require("../Controllers/OrderController")
+
+const getTime = require("../util/getTime")
 const JWT = require("../util/jwt")
 const { stateCode } = require("../util/messageCode")
 
@@ -115,6 +119,22 @@ const UserService={
         let list=await UserContoller.ShopCollectionAll(req.query)
         if(list){
             res.send(list)
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
+    },
+    AddComment:async (req,res)=>{
+        let {score,comment,dishes_id,order_id,state}=req.body
+        let user_id=getUserId(req)
+        let time=getTime
+        let dishes=await DisheController.getDisheByDisheID(dishes_id)
+        let shop_id=dishes[0].shop_id
+        let data={score,comment,dishes_id,order_id,shop_id,user_id,time}
+        let result=await UserContoller.AddComment(data)
+        let result1=await OrderController.reState(state,time,order_id,user_id)
+        if(result==stateCode.success){
+            res.send({state:stateCode.success})
         }
         else{
             res.send({state:stateCode.error})

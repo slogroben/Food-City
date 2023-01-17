@@ -46,5 +46,9 @@ router.get('/ShopCollectionAll',(req,res)=>{
     UserService.ShopCollectionAll(req,res)
 })
 
+router.post('/AddComment',(req,res)=>{
+    UserService.AddComment(req,res)
+})
+
 
 module.exports=router

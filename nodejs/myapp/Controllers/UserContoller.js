@@ -91,7 +91,17 @@ const UserContoller={
             console.log(error);
             return stateCode.error
         }
-    }
+    },
+    AddComment:async(data)=>{
+        let arr=[data.score,data.comment,data.dishes_id,data.shop_id,data.order_id,data.user_id,data.time]
+        try {
+            await promisePool.query('INSERT INTO `user_comments` VALUE(NULL,?,?,?,?,?,?,?);',arr)
+            return stateCode.success
+        } catch (error) {
+            console.log(error);
+            return stateCode.error
+        }
+    },
 }
 
 module.exports=UserContoller
