@@ -15,6 +15,7 @@
               <el-menu-item index="1-1">全部订单</el-menu-item>
               <el-menu-item index="1-2">待付款</el-menu-item>
               <el-menu-item index="1-3">已付款</el-menu-item>
+              <el-menu-item index="1-4">待评价</el-menu-item>
               <el-menu-item index="1-4">退款/售后</el-menu-item>
           </el-submenu>
           <el-submenu index="2">
@@ -39,8 +40,11 @@
                   <el-tab-pane label="已付款" name="1-3">
                     <PayOrder @godishe="godishe"></PayOrder>
                   </el-tab-pane>
-                  <el-tab-pane label="退款/售后" name="1-4">
+                  <el-tab-pane label="待评价" name="1-4">
                     <FinishOrder @godishe="godishe"></FinishOrder>
+                  </el-tab-pane>
+                  <el-tab-pane label="退款/售后" name="1-5">
+                    <EvaluatedOrder @godishe="godishe"></EvaluatedOrder>
                   </el-tab-pane>
               </el-tabs>
             </el-tab-pane>
@@ -70,6 +74,8 @@ import PayOrder from '@/components/order/PayOrder.vue';
 import DishesCollection from '@/components/order/DishesCollection.vue';
 import ShopCollection from '@/components/order/ShopCollection.vue';
 import FinishOrder from '@/components/order/FinishOrder.vue';
+import EvaluatedOrder from '@/components/order/EvaluatedOrder.vue';
+
 
 export default {
     name: "OrderHome",
@@ -87,7 +93,7 @@ export default {
       }
     }
     ,
-    components: { Header, Footer, AllOrder, NopayOrder, PayOrder, DishesCollection, ShopCollection, FinishOrder },
+    components: { Header, Footer, AllOrder, NopayOrder, PayOrder, DishesCollection, ShopCollection, FinishOrder ,EvaluatedOrder},
     methods:{
       handleSelect(key, keyPath) {
           this.first=key.split('-')[0]

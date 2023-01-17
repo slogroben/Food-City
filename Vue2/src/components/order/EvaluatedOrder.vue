@@ -15,16 +15,16 @@
             </el-image>
         </template>
       </el-table-column>
-        <el-table-column
-          width="180"
-          label="菜品名">
-          <template slot-scope="o">
+      <el-table-column
+        width="180"
+        label="菜品名">
+        <template slot-scope="o">
             <div @click="$emit('godishe',o.row)">{{o.row.order_title}}</div>
         </template>
-        </el-table-column>
+      </el-table-column>
       <el-table-column
         prop="order_price"
-        sortable
+        
         label="价格">
       </el-table-column>
       <el-table-column
@@ -41,19 +41,12 @@
       <el-table-column
         prop="time"
         label="下单时间"
-        sortable
         width="160">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="o">
-            <div v-if="o.row.order_state==$store.state.orderState.Pay">
-                <li>
-                    <el-button size="mini" type="warning" @click="finish(o.row)">立即收货</el-button>
-                </li>
-                <li></li>
-                <li>
-                    <el-button size="mini" type="danger" @click="del(o.row)">取消订单</el-button>
-                </li>  
+            <div v-if="o.row.order_state==$store.state.orderState.Evaluated">
+                <el-button size="mini" type="danger" @click="del(o.row)">删除记录</el-button>
             </div> 
         </template>
       </el-table-column>
@@ -66,18 +59,18 @@ import axios from 'axios'
 import qs from "qs"
 import server from '@/utils/request'
     export default {
-        name:'PayOrder',
+        name:'EvaluateOrder',
         data(){
             return{
                 orderList:'',
+                visible:false,
+                order_id:''
             }
         },
         methods:{
             getOrder(){
-                let state=this.$store.state.orderState.Pay
-                let token=localStorage.getItem('token')
-                server.getReq('/order/find?state='+state)
-                .then(
+                let state=this.$store.state.orderState.Evaluated
+                server.getReq('/order/find?state='+state).then(
                 response=>{
                     this.orderList=response.data
                 },
@@ -94,33 +87,17 @@ import server from '@/utils/request'
                 server.getReq('/order/delete?order_id='+o.order_id)
                 .then(
                 response=>{
-                  this.$message({
-                                message: '删除成功',
+                    this.$message({
+                                message: '删除记录成功',
                                 type: 'success'
                             });
-                            this.getOrder()
                     this.getOrder()
                 },
                 error=>{
                     console.log(error);
                 }
             )
-            },
-            finish(o){
-                let state=this.$store.state.orderState.finish
-                server.getReq('/order/restate?order_id='+o.order_id+'&state='+state)
-                .then(
-                    response=>{
-                        this.$message({
-                            message: '收货成功',
-                            type: 'success'
-                        });
-                        this.getOrder()
-                        this.visible=false
-                    }
-                )
             }
-
         },
         mounted(){
             this.getOrder()

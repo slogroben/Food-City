@@ -24,10 +24,12 @@
       </el-table-column>
       <el-table-column
         prop="order_price"
+        
         label="价格">
       </el-table-column>
       <el-table-column
         prop="order_num"
+        width="50"
         label="数量">
       </el-table-column>
       <el-table-column label="状态">
@@ -43,12 +45,15 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="o">
-            <li>
-                <el-button type="text" @click="topay(o.row)">立即支付</el-button>
-            </li>
-            <li>
-                <el-button type="text" @click="del(o.row)">取消订单</el-button>
-            </li>    
+            <div v-if="o.row.order_state==$store.state.orderState.noPay">
+                <li>
+                    <el-button size="mini" type="success" @click="topay(o.row)">立即支付</el-button>
+                </li>
+                <li> </li>
+                <li>
+                    <el-button size="mini" type="danger" @click="del(o.row,'取消成功')">取消订单</el-button>
+                </li> 
+            </div> 
         </template>
       </el-table-column>
     </el-table>
@@ -79,7 +84,6 @@ import server from '@/utils/request'
         methods:{
             getOrder(){
                 let state=this.$store.state.orderState.noPay
-                let token=localStorage.getItem('token')
                 server.getReq('/order/find?state='+state).then(
                 response=>{
                     this.orderList=response.data
@@ -139,6 +143,7 @@ import server from '@/utils/request'
 <style scoped>
 li{
     list-style: none;
+    display: inline-block;
     margin: 0 10px 0 0;
 }
 .order{

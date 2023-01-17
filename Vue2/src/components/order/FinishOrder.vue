@@ -24,10 +24,12 @@
         </el-table-column>
       <el-table-column
         prop="order_price"
+        sortable
         label="价格">
       </el-table-column>
       <el-table-column
         prop="order_num"
+        width="50"
         label="数量">
       </el-table-column>
       <el-table-column label="状态">
@@ -39,14 +41,54 @@
       <el-table-column
         prop="time"
         label="下单时间"
+        sortable
         width="160">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="o">
-            <el-button type="text" @click="del(o.row)">删除记录</el-button>
+          <div v-if="o.row.order_state==$store.state.orderState.finish">
+              <li>
+                  <el-button size="mini" type="primary" @click="toComment(o.row)">评价一下</el-button>
+              </li>
+              <li> </li>
+              <li>
+                <el-button size="mini" type="danger" @click="del(o.row)">不评价</el-button>
+              </li> 
+          </div>  
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+      title="发表评价"
+      :visible.sync="commentflag"
+      width="600px"
+      v-if="this.chooseOrder">
+      <el-card :body-style="{ padding: '0px' }" >
+        <img style="float: left;" :src="img(this.chooseOrder.order_img1)" class="image" width="100px" height="100px">
+        <div style="padding: 14px;margin: 0px 20px 0 100px;">
+          <div style="font-weight: 500; font-size: 20px;">{{this.chooseOrder.order_title}}</div>
+          <br/>
+          <time class="time">{{ this.chooseOrder.time }}</time>
+        </div>
+      </el-card>
+      <br/>
+      <div>
+        <span style="font-weight: 600;font-size: 20px;">商品得分</span>
+        <div>
+          <i class="el-icon-star-off" @load="chooseStar($event)"  @mouseenter="chooseStar($event)" style="font-size: 50px;" v-for=" num in 5 " :key="num"></i>
+          <span style="margin-left: 10px;,font-weight: 600;font-size: 20px;">{{this.score+'分'}}</span>
+        </div>  
+      </div>
+      <div>
+        <p style="font-weight: 600;font-size: 20px;">商品评价</p>
+        <textarea v-model="comment" style="resize: none;" cols="73" maxlength="100" rows="11"  placeholder="谈谈你的看法吧！">
+        </textarea>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="commentflag = false">取 消</el-button>
+        <el-button type="primary" @click="toEvaluated()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -59,6 +101,11 @@ import server from '@/utils/request'
         data(){
             return{
                 orderList:'',
+                commentflag:false,
+                chooseOrder:'',
+                percentage:100,
+                score:0,
+                comment:''
             }
         },
         methods:{
@@ -92,6 +139,72 @@ import server from '@/utils/request'
                     console.log(error);
                 }
             )
+            },
+            toComment(o){
+              this.commentflag=true
+              this.chooseOrder=o
+            },
+            sumScore(percentage){
+              this.score=(percentage*5)/100
+              return this.score
+            },
+            chooseStar(e){
+              let nodeList=e.target.parentNode.childNodes
+              //初始化
+              nodeList.forEach((n,index)=>{
+                  n.style.color=''
+              })
+              nodeList.forEach((n,index,nodeList) => {
+                  if(n==e.target){
+                    this.score=index+1
+                    return
+                  }
+              })
+              nodeList.forEach((n,index)=>{
+                if(index<=this.score-1){
+                  n.style.color='yellow'
+                }
+              })
+            },
+            toEvaluated(){
+              if(this.score==0){
+                this.$message({
+                    message: '还未对商品进行打分',
+                    type: 'error'
+                });
+                return
+              }
+              if(this.comment==''){
+                this.$message({
+                    message: '还未对商品进行评论',
+                    type: 'error'
+                });
+                return
+              }
+              let {dishes_id,order_id}=this.chooseOrder
+              let data={
+                score:this.score,
+                comment:this.comment,
+                dishes_id,
+                order_id,
+                state:this.$store.state.orderState.Evaluated
+              }
+              server.postReq('/user/AddComment',data)
+              .then(
+                response=>{
+                  this.$message({
+                      message: '评论成功',
+                      type: 'success'
+                  });
+                  this.score=0,
+                  this.comment=''
+                  this.getOrder()
+                  this.commentflag=false
+                },
+                error=>{
+                  console.log(error);
+                }
+              )
             }
         },
         mounted(){

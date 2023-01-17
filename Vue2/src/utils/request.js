@@ -32,11 +32,14 @@ server.interceptors.response.use(function (response) {
             return Promise.reject(error);
         }  
     }
-    
-      
-    if(error.response.data.errCode==store.state.stateCode.tokenOutTime){
-        router.push({name:'userlogin'})
+    try {
+        if(error.response.data.errCode==store.state.stateCode.tokenOutTime){
+            router.push({name:'userlogin'})
+        }
+    } catch (error) {
+        
     }
+    
     return Promise.reject(error);
   });
 

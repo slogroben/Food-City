@@ -13,7 +13,7 @@
             </el-carousel>
         </div>
         
-        <div class="userlogin" v-if="boxflag">
+        <div class="userlogin">
             <div v-if="!user">
                 <div>
                     <el-avatar style="margin:40px 0 0 80px;" :size="70" :src="circleUrl"></el-avatar>

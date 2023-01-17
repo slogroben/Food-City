@@ -63,6 +63,33 @@
             <el-button style="margin-left: 50px;" @click="sellerpage" type="warning" round>进入店铺</el-button>
         </div>
 	</div>
+    <div style="position: relative;left: 125px; top: 600px;width: 1182px;height: 100px;">
+        <div style="position:absolute;width: 1182px;height: 80px;">
+            <hr/>
+            <p style="text-align: center;">评论区</p>
+            <hr/>
+        </div>
+        <div>
+            <div class="usermsg" style="position: absolute;top: 80px; width: 1182px;height: 80px;">
+                <div class="userimg" style="float: left;margin:10px 50px 0px 50px;">
+                    <img :src='img(maximg)' width="60px" height="60px" style="border-radius: 30px;">
+                </div>
+                <div>
+                    <div class="username" style="margin: 10px 0 20px 0px;">
+                        帅到被人砍
+                    </div>
+                    <div class="time" >
+                        200001212121112
+                    </div>
+                </div>
+            </div>
+            <div class="comment" style="position: absolute;top:160px ;width: 1182px;height: 100px;">
+                <p style="margin-left: 160px;font-size: 20px;">你在说阿萨飒飒啊飒飒啊啊飒飒飒飒飒飒飒飒飒飒撒阿萨飒飒飒飒飒飒撒阿萨飒飒飒飒飒飒飒飒飒飒什么屁话3，垃圾就是</p>
+                <hr/>
+            </div>
+        </div>
+        
+    </div>
     </div>
     <el-dialog title="支付" :visible.sync="visible" center>
         <el-button plain>支付宝支付</el-button>

@@ -136,7 +136,8 @@ const state={
         shopCart:0,
         noPay:1,
         Pay:2,
-        finish:3
+        finish:3,
+        Evaluated:4
     },
 
     stateCode:{

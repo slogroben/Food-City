@@ -24,10 +24,12 @@
       </el-table-column>
       <el-table-column
         prop="order_price"
+        sortable
         label="价格">
       </el-table-column>
       <el-table-column
         prop="order_num"
+        width="50"
         label="数量">
       </el-table-column>
       <el-table-column label="状态">
@@ -40,19 +42,32 @@
       <el-table-column
         prop="time"
         label="下单时间"
-        width="160">
+        sortable
+        width="150">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="o">
             <div v-if="o.row.order_state==$store.state.orderState.noPay">
                 <li>
-                    <el-button type="text" @click="topay(o.row)">立即支付</el-button>
+                    <el-button size="mini" type="success" @click="topay(o.row)">立即支付</el-button>
                 </li>
+                <li></li>
                 <li>
-                    <el-button type="text" @click="del(o.row,'取消成功')">取消订单</el-button>
+                    <el-button size="mini" type="danger" @click="del(o.row,'取消成功')">取消订单</el-button>
                 </li> 
             </div>
-            <el-button v-if="o.row.order_state==$store.state.orderState.Pay" type="text" @click="del(o.row)">删除记录</el-button>
+            <div v-if="o.row.order_state==$store.state.orderState.Pay">
+                <li>
+                    <el-button size="mini" type="warning" @click="finish(o.row)">立即收货</el-button>
+                </li>
+                <li></li>
+                <li>
+                    <el-button size="mini" type="danger" @click="del(o.row)">取消订单</el-button>
+                </li>  
+            </div>
+            <div v-if="o.row.order_state==$store.state.orderState.finish">
+                <el-button size="mini" type="danger" @click="del(o.row)">删除记录</el-button>
+            </div>       
         </template>
       </el-table-column>
     </el-table>
@@ -127,6 +142,20 @@ import server from '@/utils/request'
                     response=>{
                         this.$message({
                             message: '支付成功',
+                            type: 'success'
+                        });
+                        this.getOrder()
+                        this.visible=false
+                    }
+                )
+            },
+            finish(o){
+                let state=this.$store.state.orderState.finish
+                server.getReq('/order/restate?order_id='+o.order_id+'&state='+state)
+                .then(
+                    response=>{
+                        this.$message({
+                            message: '收货成功',
                             type: 'success'
                         });
                         this.getOrder()
