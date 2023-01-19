@@ -18,8 +18,8 @@
       <el-table-column
         width="300"
         label="菜品名">
-        <template slot-scope="o">
-            <div @click="$emit('godishe',o.row)">{{o.row.order_title}}</div>
+        <template slot-scope="d">
+            <div @click="$emit('godishe',d.row)">{{d.row.dishes_title}}</div>
         </template>
       </el-table-column>
       <el-table-column label="操作" >

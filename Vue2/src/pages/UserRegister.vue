@@ -28,12 +28,13 @@
                     <span class="errmsg" v-if="phoneflag=='n'">!请输入正确的手机号码</span>
                 </div>
                 <div class="yzbox1">
-                    验证码&emsp;：<input @blur="getcaptcha($event)" class="yz" type="text" placeholder="请输入验证码">
-                    <img src="http://localhost:8080/My/CaptchaServlet" class="captchaSent" alt="图片未加载" @click="reflash($event)">
+                    验证码&emsp;：<input @blur="captcha($event),getcaptcha($event)" class="yz" type="text" placeholder="请输入验证码">
+                    <img :src=captchaUrl class="captchaSent" alt="图片未加载" @click="reflash($event)">
                 </div>
                 <div class="msgbox" style="top:433px">
-                    <span class="rightmsg" v-if="captchaflag=='right'">√ 验证码正确</span>
-                    <span class="errmsg" v-if="captchaflag=='error'">!验证码错误</span>
+                    <span class="rightmsg" v-if="captchaflag===this.$store.state.stateCode.success">√ 验证码正确</span>
+                    <span class="errmsg" v-if="captchaflag===this.$store.state.stateCode.error">!验证码错误</span>
+                    <span class="errmsg" v-if="captchaflag==='null'">!验证码为空</span>
                 </div>
                 <div>
                     <button class="register"  v-show="!btnflag">注册</button>
@@ -49,6 +50,7 @@
 <script>
 import axios from 'axios'
 import qs from 'qs'
+import server from '@/utils/request'
 export default {
     name:"UserRegister",
     data(){
@@ -77,6 +79,10 @@ export default {
             else{
                 return false
             }
+        },
+        captchaUrl(){
+            console.log(server.getUri()+'captcha/img');
+            return server.getUri()+'captcha/img'
         }
     },
     methods:{
@@ -132,7 +138,7 @@ export default {
         register(){
             if(this.clickflag===0){
                 this.clickflag=1
-                axios({
+                server.getReq({
                     method:'post',
                     url:'http://localhost:8080/My/UserRegisterServlet', 
                     data:qs.stringify(this.userList)
@@ -160,30 +166,24 @@ export default {
         },
         reflash(event){
                 let time=new Date().getTime()
-                event.target.src="http://localhost:8080/My/CaptchaServlet?time="+time
+                event.target.src=this.captchaUrl+'?time='+time
             },
         getcaptcha(){
-                axios({
-                    method:'get',
-                    url:'http://localhost:8080/My/getCaptchaServlet?captcha='+this.captcha,
-                    withCredentials: true
-                     }).then(
+                if(!this.userList.captcha.trim()){
+                    this.captchaflag='null'
+                    return
+                }
+                server.getReq('/captcha/verify?captcha='+this.userList.captcha).then(
                     response=>{
                         if(response.data){
-                            this.captchaflag='right'
-                        }
-                        else{
-                            this.captchaflag='error'
-                        }
-                        if(!this.captcha.trim()){
-                            this.captchaflag='null'
+                            this.captchaflag=response.data.state
                         }
                     },
                     error=>{
                         console.log("验证码获取失败"+error.message);
                     }
                 )
-            },
+            }
     }
 }
 </script>

@@ -3,12 +3,13 @@ import axios from "axios";
 import store from "@/store";
 
 const server=axios.create({
-    baseURL:'http://192.168.43.175:8080/',
-    timeout:10000
+    baseURL:'http://192.168.8.125:8080/',
+    timeout:10000,
+    // withCredentials: true
 })
 
 server.interceptors.request.use((config)=>{
-    let excludeData=['getAllDishe','getAllSeller','login','register','getSellerByID','getDisheByID']
+    let excludeData=['getAllDishe','getAllSeller','login','register','getSellerByID','getDisheByID','captcha']
     for (const s of excludeData) {
         if(config.url.includes(s)){
             return config

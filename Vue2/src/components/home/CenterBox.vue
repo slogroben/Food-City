@@ -40,18 +40,18 @@
                         <p>{{num.shopCart}}</p>
                         <el-button type="text">购物车</el-button>
                     </div>
-                    <div class="boxmin" @click="$router.push({name:'orderhome',query:{first:'1',activeName:'1-2'}})">
+                    <div class="boxmin" @click="$router.push({name:'orderhome',params:{first:'1',activeName:'1-2'}})">
                         <p>{{num.noPay}}</p>
                         <el-button type="text">待支付</el-button>
                     </div>
-                    <div class="boxmin" @click="$router.push({name:'orderhome',query:{first:'1',activeName:'1-3'}})">
+                    <div class="boxmin" @click="$router.push({name:'orderhome',params:{first:'1',activeName:'1-3'}})">
                         <p>{{num.Pay}}</p>
                         <el-button type="text">已支付</el-button>
                     </div>
                 </div>
                 <div>
                     <div class="iconbox">
-                        <label @click="$router.push({name:'orderhome',query:{first:'2',activeName:'2-1'}})">
+                        <label @click="$router.push({name:'orderhome',params:{first:'2',activeName:'2-1'}})">
                             <i class="el-icon-star-off"></i>
                             <p>菜品收藏</p>
                         </label>
@@ -63,7 +63,7 @@
                         </label>
                     </div>
                     <div class="iconbox">
-                        <label @click="$router.push({name:'orderhome',query:{first:'2',activeName:'2-2'}})">
+                        <label @click="$router.push({name:'orderhome',params:{first:'2',activeName:'2-2'}})">
                             <i class="el-icon-s-shop"></i>
                             <p>店铺收藏</p>
                         </label>

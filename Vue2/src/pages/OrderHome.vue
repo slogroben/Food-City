@@ -16,7 +16,7 @@
               <el-menu-item index="1-2">待付款</el-menu-item>
               <el-menu-item index="1-3">已付款</el-menu-item>
               <el-menu-item index="1-4">待评价</el-menu-item>
-              <el-menu-item index="1-4">退款/售后</el-menu-item>
+              <el-menu-item index="1-5">退款/售后</el-menu-item>
           </el-submenu>
           <el-submenu index="2">
             <template slot="title">
@@ -32,19 +32,19 @@
             <el-tab-pane label="我的订单" name="1">
               <el-tabs v-model="activeName" type="border-card">
                   <el-tab-pane label="全部订单" name="1-1">
-                    <AllOrder @godishe="godishe"></AllOrder>
+                    <AllOrder @godishe="godishe" :key="time"></AllOrder>
                   </el-tab-pane>
                   <el-tab-pane label="待付款" name="1-2">
-                    <NopayOrder @godishe="godishe"></NopayOrder>
+                    <NopayOrder @godishe="godishe" :key="time"></NopayOrder>
                   </el-tab-pane>
                   <el-tab-pane label="已付款" name="1-3">
-                    <PayOrder @godishe="godishe"></PayOrder>
+                    <PayOrder @godishe="godishe" :key="time"></PayOrder>
                   </el-tab-pane>
                   <el-tab-pane label="待评价" name="1-4">
-                    <FinishOrder @godishe="godishe"></FinishOrder>
+                    <FinishOrder @godishe="godishe" :key="time"></FinishOrder>
                   </el-tab-pane>
                   <el-tab-pane label="退款/售后" name="1-5">
-                    <EvaluatedOrder @godishe="godishe"></EvaluatedOrder>
+                    <EvaluatedOrder @godishe="godishe" :key="time"></EvaluatedOrder>
                   </el-tab-pane>
               </el-tabs>
             </el-tab-pane>
@@ -82,17 +82,21 @@ export default {
     data(){
         return{
           first:'1',
-          activeName:'1-1',
+          activeName:'1'+'-'+'1',
           orderflag:'',
-          
+          time:''
         }
     },
     watch:{
       first:function(params){
-        params=='2'?this.activeName='2-1':this.activeName='1-1'
+        if(this.activeName.split("-")[0]==params){return}
+        this.activeName=params+'-'+'1'
+      },
+      activeName:function(){
+        let date=new Date()
+        this.time=date.getTime()
       }
-    }
-    ,
+    },
     components: { Header, Footer, AllOrder, NopayOrder, PayOrder, DishesCollection, ShopCollection, FinishOrder ,EvaluatedOrder},
     methods:{
       handleSelect(key, keyPath) {
@@ -123,12 +127,12 @@ export default {
                   })
               }
           )
-      },
+      }
     },
     mounted(){
-      if(Object.keys(this.$route.query).length!=0){
-        this.first=this.$route.query.first
-        this.activeName=this.$route.query.activeName
+      if(Object.keys(this.$route.params).length!=0){
+        this.first=this.$route.params.first
+        this.activeName=this.$route.params.activeName
       }
     }
 }
