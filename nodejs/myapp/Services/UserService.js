@@ -127,10 +127,11 @@ const UserService={
     AddComment:async (req,res)=>{
         let {score,comment,dishes_id,order_id,state}=req.body
         let user_id=getUserId(req)
+        let {username,imgurl}=getUser(req)
         let time=getTime
         let dishes=await DisheController.getDisheByDisheID(dishes_id)
         let shop_id=dishes[0].shop_id
-        let data={score,comment,dishes_id,order_id,shop_id,user_id,time}
+        let data={score,comment,dishes_id,order_id,shop_id,user_id,time,username,imgurl}
         let result=await UserContoller.AddComment(data)
         let result1=await OrderController.reState(state,time,order_id,user_id)
         if(result==stateCode.success){
@@ -144,5 +145,8 @@ const UserService={
 
 function getUserId(req){
     return JWT.verify(req.header('Authorization')?.split(' ')[1]).id
+}
+function getUser(req){
+    return JWT.verify(req.header('Authorization')?.split(' ')[1])
 }
 module.exports=UserService

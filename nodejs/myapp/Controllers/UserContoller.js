@@ -93,7 +93,7 @@ const UserContoller={
         }
     },
     AddComment:async(data)=>{
-        let arr=[data.score,data.comment,data.dishes_id,data.shop_id,data.order_id,data.user_id,data.time]
+        let arr=[data.score,data.comment,data.dishes_id,data.shop_id,data.order_id,data.user_id,data.time,data.username,data.imgurl]
         try {
             await promisePool.query('INSERT INTO `user_comments` VALUE(NULL,?,?,?,?,?,?,?);',arr)
             return stateCode.success
