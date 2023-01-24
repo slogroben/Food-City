@@ -92,6 +92,7 @@
 <script>
     import axios from "axios"
     import qs from 'qs'
+import server from '@/utils/request'
     export default {
         
         name:'SellerRegisterMessage',
@@ -187,8 +188,6 @@
             },
             submit(){
                 var formData = new FormData()
-                
-                console.log(this.$route.params);
                 const shopList={
                     shopname:this.shopname,
                     area:this.area,
@@ -200,29 +199,34 @@
                     imgurl:this.$refs.file.files[0],
                     description:this.description,
                     sellerphone:this.$route.query.phone,
-                    ispass:'false',
-                    shopstate:'review'
+                    ispass:0,
+                    shopstate:this.$store.state.shopstate.review
                 }
                 formData=shopList
-                axios({
-                    method:'post',
-                    url:'http://localhost:8080/My/SellerRegisterServlet',
-                    data:formData,
-                    headers: {
+                server.postReq('/seller/register',formData,{
                         'Content-Type': 'multipart/form-data'
                     }
-                })
+                )
                 .then(
                     response=>{
-                        this.$message({
-                            message: '开通店铺成功，请登录',
-                            type: 'success'
-                        })
-                        setTimeout(() => {
-                            this.$router.push({
-                                name:'sellerlogin'
+                        if(response.data.state==this.$store.state.stateCode.success){
+                            this.$message({
+                                message: '开通店铺成功，请登录',
+                                type: 'success'
                             })
-                        }, 1500);                       
+                            setTimeout(() => {
+                                this.$router.push({
+                                    name:'sellerlogin'
+                                })
+                            }, 1500);
+                        }else{
+                            this.$message({
+                                message: '开通店铺失败，后台数据有误',
+                                type: 'error'
+                            })
+                        }
+                           
+
                     },
                     error=>{
                         console.log('请求失败');

@@ -24,7 +24,6 @@
       </el-table-column>
       <el-table-column
         prop="order_price"
-        
         label="价格">
       </el-table-column>
       <el-table-column
@@ -34,8 +33,7 @@
       </el-table-column>
       <el-table-column label="状态">
         <template slot-scope="o">
-            <el-tag v-if="o.row.order_state==$store.state.orderState.noPay" type="danger">未支付</el-tag>
-            <el-tag v-if="o.row.order_state==$store.state.orderState.Pay">已支付</el-tag>
+            <el-tag v-if="o.row.order_state==$store.state.orderState.Evaluated" type="success">已评价</el-tag>
         </template>
       </el-table-column>
       <el-table-column

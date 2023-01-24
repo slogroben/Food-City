@@ -2,65 +2,98 @@
     <div>
         <Header></Header>
         <div class="buycar">
-            <div class="buycartop">
-            <h2>全部商品 <span>数量：{{orderList.length}}</span></h2> 
+            <div class="cart-header">
+                <div class="cart-header-content">
+                    <p>
+                    <i class="el-icon-shopping-cart-full" style="color:#ff6700; font-weight: 600;">
+                    </i>
+                    我的购物车
+                    </p>
+                    <span>温馨提示：产品是否购买成功，以最终下单为准哦，请尽快结算</span>
+                </div>
             </div>
-            <div class="buycarheader">
-                <ul>
-                    <li>选择</li>
-                    <li>图片</li>
-                    <li>商品信息</li>
-                    <li>单价</li>
-                    <li>数量</li>
-                    <li>金额</li>
-                    <li>操作</li>
-                </ul>
-            </div>
-            <el-empty description="暂无菜品" v-if="orderList.length==0"></el-empty>
-            <div class="buycargoods" v-for="(o,index) in orderList" :key="index">   
-                <ul>
-                    <li>
-                        <input type="checkbox" @click="cbox($event,index)" :checked="o.isChecked">
-                    </li>
-                    <label @click="godishe(o)">
-                        <li>
-                            <el-image
-                                v-if="o.order_img1"
-                                style="width: 80px; height: 80px"
-                                fit="contain"
-                                :src="img(o.order_img1)">
-                            </el-image>
-                        </li>
-                    </label>
-                    <li>{{o.order_title}}</li>
-                    <li>{{o.order_price}}</li>
-                    <li>
-                        <div style="margin: 0 0 100px 0;"> 
-                            <el-input-number v-model="o.order_num" size="small" @change="sumnum(o)" :min="1" :max="9999"></el-input-number>
-                        </div>
-                        <!-- <button @click="decnum(o,$event)" :disabled='o.order_num<=1'>-</button>
-                        <input @blur="sumnum(o)" style="width: 40px;height: 30px;" type="text"  v-model="o.order_num">
-                        <button @click="addnum(o)">+</button> -->
-                    </li>
-                    <li>{{o.order_price*o.order_num}}</li>
-                    <li>
-                        <button @click="del(o)">删除</button>
-                    </li>
-                </ul>
-            </div>
+        </div>
+        <div class="tab" v-if="orderList.length!=0">
+            <el-table
+            ref="multipleTable"
+            :data="orderList"
+            tooltip-effect="dark"
+            style="left: 125px;top: 40px;width: 1200px;margin: 0px 0px 0 0;">
+            <el-table-column
+            label="选择"
+            width="55">
+            <template slot-scope="o">
+                <input type="checkbox" @click="cbox($event,o.row)" :checked="o.row.isChecked">
+            </template>
+            </el-table-column>
+            <el-table-column
+            width="150">
+            <template slot-scope="o">
+                <el-image
+                style="width: 70px; height: 80px"
+                :src="img(o.row.order_img1)"
+                fit="cover"></el-image>
+            </template>
+            </el-table-column>
+            <el-table-column
+            label="商品名"
+            width="400">
+            <template slot-scope="o">
+                <p style="font-size: 38;font-weight: 500;color: #ff6700;">{{ o.row.order_title }}</p>
+            </template>
+            </el-table-column>
+            <el-table-column
+            prop="order_price"
+            label="单价"
+            show-overflow-tooltip>
+            <template slot-scope="o">
+                {{ o.row.order_price+'元' }}
+            </template>
+            </el-table-column>
+            <el-table-column
+            label="数量"
+            width="200px"
+            >
+            <template slot-scope="o" style="">
+                <el-input-number v-model="o.row.order_num" size="mini" @change="sumnum(o.row)" :min="1" :max="10"></el-input-number>
+            </template>
+            </el-table-column>
+            <el-table-column
+            label="小计"
+            show-overflow-tooltip>
+            <template slot-scope="o">
+                <div style="color: #ff6700;">
+                    {{ o.row.order_price*o.row.order_num+'元'}}
+                </div>
+            </template>
+            </el-table-column>
+            <el-table-column
+            label="操作">
+            <template slot-scope="o">
+                <el-popconfirm
+                confirm-button-text='确定'
+                cancel-button-text='取消'
+                icon="el-icon-info"
+                icon-color="red"
+                @confirm="del(o.row)"
+                title="确定移除该商品吗？"
+                >
+                    <el-button slot="reference" type="danger" icon="el-icon-close" circle></el-button>
+                </el-popconfirm>
+            </template>
+            </el-table-column>
+        </el-table>
             <div class="buycarfooter">
                 <ul>
                     <li>
-                        <div v-if="!checkedflag">
-                            <i>&emsp;&emsp;&nbsp;</i>
+                        <label v-if="!checkedflag">
                             <input type="checkbox" :checked=false @click="allchecked">
                             <span>全选</span>
-                        </div>
-                        <div v-if="checkedflag">
-                            <i>&emsp;&emsp;&nbsp;</i>
+                        </label>
+                        <label v-if="checkedflag">
                             <input type="checkbox" :checked=true @click="noallchecked">
                             <span>取消全选</span>
-                        </div>
+                        </label>
                     </li>
                     <li><button @click="choosedel">删除商品</button></li>
                     <li></li>
@@ -72,6 +105,10 @@
                     </li>
                 </ul>
             </div>
+            <div style="height: 20px;width: 100%;"></div>
+        </div>
+        <div v-if="orderList.length==0">
+            <el-empty description="还没有添加商品到购物车，可以继续看看哦" :image-size="200"></el-empty>
         </div>
     </div>
 </template>
@@ -102,9 +139,19 @@ export default {
             return this.$store.state.shopcart
         }
     },
+    watch:{
+        checkednum(){
+            let btn=document.querySelector('.gobuy')
+            if(this.checkednum!=0){   
+                btn.style.backgroundColor='#ff6700'
+            }else{
+                btn.style.backgroundColor='#e0e0e0'
+            }
+            
+        }
+    },
     methods:{
         del(order){
-            let token=localStorage.getItem('token')
             server.getReq('/order/delete?order_id='+order.order_id).then(
             response=>{
                 this.updateOrder()
@@ -123,9 +170,11 @@ export default {
                 this.del(o)
             })
         },
-        cbox(event,index){
-            this.orderList[index].isChecked=event.target.checked
+        cbox(event,order){
             this.orderList.forEach(o => {
+                if(o==order){
+                    o.isChecked=event.target.checked
+                }
                 if(o.isChecked){
                     this.checkednum=this.checkednum+1
                 }
@@ -137,22 +186,20 @@ export default {
                 this.checkedflag=false
                 this.checkednum=0
             }
-            this.$mount()
         },
         allchecked(){
             this.checkedflag=!this.checkedflag
-            this.checkednum=this.orderList.length
             this.orderList.forEach(o => {
                 o.isChecked=true
-            })
-            this.$mount()         
+            })   
+            this.checkednum=this.orderList.length     
         },
         noallchecked(){
            this.checkedflag=!this.checkedflag
            this.orderList.forEach(o => {
                 o.isChecked=false
             })
-            this.$mount()  
+            this.checkednum=0
         },
         allmoney(){
             let sum=0
@@ -244,62 +291,64 @@ export default {
 </script>
 
 <style scoped>
+body{
+    background-color: #757575;
+}
 .buycar{
     position: relative;
     left: 125px;
-    background-color: wheat;
     width: 1200px;
-    margin: 30px 0px;
+    margin: 20px 0px 0 0;
+    /* border-top: 1px solid; */
 }
-.buycartop{
-    position: relative;
-    left: 50px;
+.cart-header{
+    border-bottom:2px solid #ff6700;
 }
-.buycarheader{
-    position: relative;
-    border-top: 1px solid gray;
-    left: 50px;
-    width: 1100px;
-    height: 40px;
-    border-bottom: 1px solid gray;
+.cart-header p{
+    font-size: 28px;
+    /* line-height: 58px; */
+    /* float: left; */
+    font-weight: 400;
+    color: #424242;
+    margin: 0 0 0 0;
 }
-.buycarheader ul li{
-    display: inline-block;
-    list-style: none;
-    width: 145px;
-    height: 30px;
+.cart-header span{
+    color: #757575;
+    font-size: 12px;
+    /* float: left; */
+    height: 20px;
+    line-height: 20px;
+    margin-top: 18px;
+    margin-left: 15px;
 }
-.buycargoods{
-    position: relative;
-    left: 50px;
-    width: 1100px;
-    height: 100px;
-}
-.buycargoods ul li{
-    display: inline-block;
-    list-style: none;
-    width: 145px;
-    height: 100px;
+.tab{
+    background-color: #f5f5f5;
+    height: 700px
 }
 .buycarfooter{
-    position: relative;
-    top: 10px;
-    
-    border: 1px solid black;
-    background-color: #E5E5E5;
+    width: 1200px;
+    height: 56px;
+    margin: 70px 0 70px 125px;
+    background-color: #FFFFFF;
 }
-.buycarfooter ul li{
+.buycarfooter ul{
+    padding: 0 0 0 9px;
+}
+.buycarfooter li{
     display: inline-block;
     list-style: none;
     width: 160px;
     height: 20px;
+    margin-top:0px;
 }
 .gobuy{
-    position: absolute;
-    right: 0;top: 0;  
-    width: 100px;
     height: 56px;
-    background-color:#9999;
-    border-style: none;
+    width: 200px;
+    text-align: center;
+    font-size: 18px;
+    margin-left: 30px;
+    background: #e0e0e0;
+    color: #b0b0b0;
+    border: none;
 }
 </style>

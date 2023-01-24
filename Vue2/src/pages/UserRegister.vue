@@ -73,7 +73,7 @@ export default {
     },
     computed:{
         btnflag(){
-            if(this.usernameflag=='y'&&this.passwordflag=='y'&&this.rightpasswordflag=='y'&&this.phoneflag=='y'&&this.captchaflag==''&&this.checkboxflag){
+            if(this.usernameflag=='y'&&this.passwordflag=='y'&&this.rightpasswordflag=='y'&&this.phoneflag=='y'&&this.captchaflag==this.$store.state.stateCode.success&&this.checkboxflag){
                 return true
             }
             else{
@@ -81,7 +81,6 @@ export default {
             }
         },
         captchaUrl(){
-            console.log(server.getUri()+'captcha/img');
             return server.getUri()+'captcha/img'
         }
     },
@@ -138,11 +137,7 @@ export default {
         register(){
             if(this.clickflag===0){
                 this.clickflag=1
-                server.getReq({
-                    method:'post',
-                    url:'http://localhost:8080/My/UserRegisterServlet', 
-                    data:qs.stringify(this.userList)
-                }).then(
+                server.postReq('/user/register',qs.stringify(this.userList)).then(
                     response=>{
                         // this.$store.commit('RegisterJoup',response.data)
                         this.clickflag=0

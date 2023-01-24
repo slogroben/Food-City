@@ -69,26 +69,28 @@
             <p style="text-align: center;">评论区</p>
             <hr/>
         </div>
-        <div>
-            <div class="usermsg" style="position: absolute;top: 80px; width: 1182px;height: 80px;">
-                <div class="userimg" style="float: left;margin:10px 50px 0px 50px;">
-                    <img :src='img(maximg)' width="60px" height="60px" style="border-radius: 30px;">
-                </div>
-                <div>
-                    <div class="username" style="margin: 10px 0 20px 0px;">
-                        帅到被人砍
+        <ul v-if="comments"  class="comments infinite-list" v-infinite-scroll="load">
+            <li class="infinite-list-item" v-for="c in comments" :key="c.uc_id"  style="position: relative;top:0;">
+                <div class="usermsg" style="position: absolute;top: 80px; width: 1182px;height: 80px;">
+                    <div class="userimg" style="float: left;margin:10px 50px 0px 50px;">
+                        <img v-if="c.imgurl" :src='img(c.imgurl)' width="60px" height="60px" style="border-radius: 30px;">
+                        <el-avatar v-if="!c.imgurl" :size="50" :src="circleUrl"></el-avatar>
                     </div>
-                    <div class="time" >
-                        200001212121112
+                    <div>
+                        <div class="username" style="margin: 10px 0 20px 0px;">
+                            {{c.username}}
+                        </div>
+                        <div class="time" >
+                            {{c.time}}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="comment" style="position: absolute;top:160px ;width: 1182px;height: 100px;">
-                <p style="margin-left: 160px;font-size: 20px;">你在说阿萨飒飒啊飒飒啊啊飒飒飒飒飒飒飒飒飒飒撒阿萨飒飒飒飒飒飒撒阿萨飒飒飒飒飒飒飒飒飒飒什么屁话3，垃圾就是</p>
-                <hr/>
-            </div>
-        </div>
-        
+                <div class="comment" style="position: absolute;top:160px ;width: 1182px;height: 100px;">
+                    <p style="margin-left: 160px;font-size: 20px;">{{c.comment }}</p>
+                    <hr/>
+                </div>
+            </li>
+        </ul>
     </div>
     </div>
     <el-dialog title="支付" :visible.sync="visible" center>
@@ -113,14 +115,23 @@ export default {
         return {
             dishes: "",
             seller: "",
+            comments:'',
             order_num:1,
             imgList:'',
             maximg:'',
             imgflag:'',
             visible:false,
-            collectionflag:false
+            collectionflag:false,
+            circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
         };
     },
+    updated(){
+        let coms=document.querySelector('.comments')
+        if(coms){
+            this.tops(coms)
+        }    
+    }
+    ,
     methods: {
         getSeller() {
             server.getReq("/seller/getSellerByID?shop_id=" + this.dishes.shop_id)
@@ -314,8 +325,29 @@ export default {
                     console.log(error);
                 }
             )
-        }
-        
+        },
+        getComments(){
+            server.getReq('/user/AllComment?dishes_id='+this.dishes.dishes_id)
+            .then(
+                response=>{
+                    this.comments=response.data
+                },
+                error=>{
+                    console.log(error);
+                }
+            )
+        },
+        tops(coms){
+            let lis=coms.childNodes
+            let num=0
+            for(let li of lis){
+                li.style.top=160*num+'px'
+                num++
+            }
+        },
+        load () {
+        this.count += 1
+      }
     },
     mounted() {
         this.dishes = this.$route.query;
@@ -329,6 +361,7 @@ export default {
         this.maximg=this.imgList[0]
         this.getSeller();
         this.collectionState();
+        this.getComments()
     },
     components: { Header }
 }

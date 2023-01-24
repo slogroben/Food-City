@@ -13,7 +13,7 @@
         </div>
         <div class="captchabox1">
             验证码&emsp;：<input v-model="captcha" @blur="getcaptcha" class="captcha" type="text" placeholder="请输入验证码">
-            <img src="http://localhost:8080/My/CaptchaServlet" class="captchaSent" alt="图片未加载" @click="reflash($event)">
+            <img src="http://localhost:8080/captcha/img" class="captchaSent" alt="图片未加载" @click="reflash($event)">
             <!-- <button type="button" class="captchaSent" @click="sentcaptcha($event)">发送验证码</button> -->
         </div>
         <div class="captchaErr">
@@ -35,6 +35,7 @@
 <script>
 import axios from 'axios'
 import qs from 'qs'
+import server from '@/utils/request'
     export default {
         name:'SellerRegister',
         data(){
@@ -71,12 +72,12 @@ import qs from 'qs'
             //验证手机号
             rephone(){
                 this.registerflag=false
-                axios({
-                    method:'get',
-                    url:'http://localhost:8080/My/SellerIsRegisterServlet?sellerphone='+this.phone
-                }).then(
+                server.getReq('/seller/login?phone='+this.phone)
+                .then(
                     response=>{
-                        console.log(typeof(this.registerflag) );
+                        if(response.data.state==this.$store.state.stateCode.null){
+                                return
+                            }
                         if(response.data){
                             this.registerflag=true
                             alert("该号码已经注册")
@@ -112,6 +113,8 @@ import qs from 'qs'
             },
             //向服务器校验验证码
             getcaptcha(){
+                this.captchaflag='right'
+                return
                 axios({
                     method:'get',
                     url:'http://localhost:8080/My/getCaptchaServlet?captcha='+this.captcha,
@@ -136,7 +139,7 @@ import qs from 'qs'
             //刷新验证码
             reflash(event){
                 let time=new Date().getTime()
-                event.target.src="http://localhost:8080/My/CaptchaServlet?time="+time
+                event.target.src="http://localhost:8080/captcha/img?time="+time
             },
             // //向服务器请求验证码
             // getcaptcha(){

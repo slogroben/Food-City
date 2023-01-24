@@ -15,7 +15,7 @@
         <div class="captchabox1">
             
             验证码&emsp;：<input v-model="captcha" @blur="recaptcha" class="captcha" type="text" placeholder="请输入验证码">
-            <img src="http://localhost:8080/My/CaptchaServlet" class="captchaSent" alt="图片未加载" @click="reflash($event)">
+            <img src="http://localhost:8080/captcha/img" class="captchaSent" alt="图片未加载" @click="reflash($event)">
             <!-- <button type="button" class="captchaSent" @click="sentcaptcha($event)">发送验证码</button> -->
         </div>
         <div class="captchaErr">
@@ -37,6 +37,7 @@
 <script>
 import axios from 'axios'
 import qs from 'qs'
+import server from '@/utils/request'
     export default {
         name:'SellerRegister',
         data(){
@@ -62,10 +63,7 @@ import qs from 'qs'
         methods:{
             //登录
             login(){
-                axios({
-                    method:'get',
-                    url:'http://localhost:8080/My/SellerLoginServlet?sellerphone='+this.phone,
-                    })
+                server.getReq('/seller/login?phone='+this.phone)
                     .then(
                         response=>{
                             sessionStorage.setItem('seller',JSON.stringify(response.data))
@@ -83,11 +81,13 @@ import qs from 'qs'
                     this.phoneflag='error'
                 }
                 else{
-                    axios({
-                        method:'get',
-                        url:'http://localhost:8080/My/SellerIsRegisterServlet?sellerphone='+this.phone
-                    }).then(
+                    server.getReq('/seller/login?phone='+this.phone)
+                    .then(
                         response=>{
+                            if(response.data.state==this.$store.state.stateCode.null){
+                                this.phoneflag='noregister'
+                                return
+                            }
                             if(response.data){
                                 this.phoneflag='right'
                             }
@@ -107,6 +107,8 @@ import qs from 'qs'
             },
             //向服务器校验验证码
             getcaptcha(){
+                this.captchaflag='right'
+                return
                 axios({
                     method:'get',
                     url:'http://localhost:8080/My/getCaptchaServlet?captcha='+this.captcha,
@@ -131,7 +133,7 @@ import qs from 'qs'
             //刷新验证码
             reflash(event){
                 let time=new Date().getTime()
-                event.target.src="http://localhost:8080/My/CaptchaServlet?time="+time
+                event.target.src="http://localhost:8080/captcha/img?time="+time
             },
             //判断是否勾选协议
             checkbox(event){

@@ -34,8 +34,7 @@
       </el-table-column>
       <el-table-column label="状态">
         <template slot-scope="o">
-            <el-tag v-if="o.row.order_state==$store.state.orderState.noPay" type="danger">未支付</el-tag>
-            <el-tag v-if="o.row.order_state==$store.state.orderState.Pay">已支付</el-tag>
+          <el-tag v-if="o.row.order_state==$store.state.orderState.finish" type="info">已收货</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -187,7 +186,7 @@ import server from '@/utils/request'
                 comment:this.comment,
                 dishes_id,
                 order_id,
-                state:this.$store.state.orderState.Evaluated
+                state:this.$store.state.orderState.Evaluated,
               }
               server.postReq('/user/AddComment',data)
               .then(

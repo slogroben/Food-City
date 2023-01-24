@@ -47,13 +47,9 @@
                         </router-link>
                     </div>  
                     <div>
-                        <router-link :to="{name:'sellerlogin'}">
                         <label>
-                            <i class="el-icon-s-shop"></i>
-                            卖家中心
+                            <el-button type="text" @click="judgeType"><i class="el-icon-s-shop"></i>卖家中心</el-button>
                         </label>
-                        
-                        </router-link>
                     </div>
                         
                 </ul>
@@ -81,6 +77,18 @@
             exitlogin(){
                 localStorage.removeItem('token')
                 this.$router.go()
+            },
+            judgeType(){
+                if(this.user){
+                        if(this.user.type==this.$store.state.userType.seller){
+                        this.$router.push({name:'sellerhome'})
+                    }
+                    if(this.user.type==this.$store.state.userType.Normal){
+                        this.$router.push({name:'sellerregister'})
+                    }
+                }else{
+                    this.$router.push({name:'userlogin'})
+                }
             }            
         },
         mounted(){

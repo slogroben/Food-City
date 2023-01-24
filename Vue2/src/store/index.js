@@ -99,6 +99,18 @@ const actions={
             order_state:data.order_state
         };
         return server.postReq("/order/add", qs.stringify(order))
+    },
+    //获取当前商家信息
+    getSeller(context){
+        server.getReq('/seller/getSeller')
+        .then(
+            response=>{
+                context.commit('modifySeller',response.data)
+            },
+            error=>{
+                console.log(error);
+            }
+        )
     }
 }
 const mutations={
@@ -118,6 +130,9 @@ const mutations={
         if(flag==state.orderState.shopCart){state.num.shopCart=state.num.shopCart+1}
         if(flag==state.orderState.noPay){state.num.noPay=state.num.noPay+1}
         if(flag==state.orderState.Pay){state.num.Pay=state.num.Pay+1}
+    },
+    modifySeller(state,data){
+        state.seller=data
     }
 }
 const state={
@@ -125,6 +140,7 @@ const state={
     sellerList:'',
     user:'',
     shopcart:'',
+    seller:'',
 
     num:{
         shopCart:0,
@@ -143,7 +159,20 @@ const state={
     stateCode:{
         tokenOutTime:-1,
         error:0,
-        success:1
+        success:1,
+        null:2
+    },
+    shopstate:{
+        review:0,//审核中
+        operate:1,//成功入驻
+        quit:2,//已经退出入驻
+        isquit:3,//退出申请中
+        reject:4//入驻被拒绝
+    },
+    userType:{
+        root:0,
+        seller:1,
+        Normal:2
     }
 }
 const getters={
