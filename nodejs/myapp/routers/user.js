@@ -2,6 +2,9 @@ const express=require('express')
 const UserService = require('../Services/UserService')
 const router=express.Router()
 
+router.post('/register',(req,res)=>{
+    UserService.userRegister(req,res)
+})
 
 router.post('/login',(req,res)=>{
     UserService.userLogin(req,res)
@@ -49,6 +52,9 @@ router.get('/ShopCollectionAll',(req,res)=>{
 router.post('/AddComment',(req,res)=>{
     UserService.AddComment(req,res)
 })
-
+//所有用户的评论
+router.get('/AllComment',(req,res)=>{
+    UserService.AllComment(req,res)
+})
 
 module.exports=router

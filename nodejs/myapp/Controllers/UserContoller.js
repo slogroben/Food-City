@@ -1,10 +1,19 @@
 const mysql2=require('mysql2')
 const getConfig = require('../config/mysqlConfig')
-const { stateCode } = require('../util/messageCode')
+const { stateCode, userType } = require('../util/messageCode')
 
 const promisePool=mysql2.createPool(getConfig()).promise()
 
 const UserContoller={
+    userRegister:async (data)=>{
+        let {username,password,phone}=data
+        try {
+            let result=await promisePool.query('insert into `user` value(null,?,?,?,null,?,null)',[username,password,phone,userType.Normal])
+            return stateCode.success
+        } catch (err) {
+            return stateCode.error
+        }
+    },
     userLogin:async (username,password)=>{
         try {
             let user=await promisePool.query('select * from `user` where username=? and `password`=?',[username,password])
@@ -95,8 +104,17 @@ const UserContoller={
     AddComment:async(data)=>{
         let arr=[data.score,data.comment,data.dishes_id,data.shop_id,data.order_id,data.user_id,data.time,data.username,data.imgurl]
         try {
-            await promisePool.query('INSERT INTO `user_comments` VALUE(NULL,?,?,?,?,?,?,?);',arr)
+            await promisePool.query('INSERT INTO `user_comments` VALUE(NULL,?,?,?,?,?,?,?,?,?);',arr)
             return stateCode.success
+        } catch (error) {
+            console.log(error);
+            return stateCode.error
+        }
+    },
+    AllComment:async(dishes_id)=>{
+        try {
+            let commentList=await promisePool.query('select * from `user_comments` where dishes_id=?;',dishes_id)
+            return commentList[0]
         } catch (error) {
             console.log(error);
             return stateCode.error

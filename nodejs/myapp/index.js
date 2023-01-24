@@ -8,10 +8,12 @@ var user=require('./routers/user')
 var order=require('./routers/order')
 var captcha=require('./routers/captcha')
 
+//二进制图片处理
+const multer=require('multer')
 
 var urlname=require('url')
 const JWT = require('./util/jwt')
-const { stateCode } = require('./util/messageCode')
+const { stateCode, stateMsg } = require('./util/messageCode')
 
 var cookieParser=require('cookie-parser')
 app.use(cookieParser('xycode'))
@@ -32,11 +34,6 @@ app.use(
 app.listen('8080',async()=>{
     console.log('服务器启动,端口为8080');
 })
-
-
-
-
-
 
 // app.use(bodyParser())//express用来解析post请求中的携带的data
 //解析post参数中间件
@@ -75,7 +72,7 @@ app.use((req,res,next)=>{
             next()
         }
         else{
-            res.status(401).send({errCode:stateCode.tokenOutTime,errInfo:'token过期'})
+            res.status(401).send({errCode:stateCode.tokenOutTime,errInfo:stateMsg.tokenOutTime})
         }
     }
     else{

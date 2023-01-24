@@ -7,6 +7,15 @@ const JWT = require("../util/jwt")
 const { stateCode } = require("../util/messageCode")
 
 const UserService={
+    userRegister:async (req,res)=>{
+        let result=await UserContoller.userRegister(req.body)
+        if(result==stateCode.success){
+            res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
+    },
     userLogin:async (req,res)=>{
         const {username,password}=req.body
         let user=await UserContoller.userLogin(username,password)
@@ -136,6 +145,16 @@ const UserService={
         let result1=await OrderController.reState(state,time,order_id,user_id)
         if(result==stateCode.success){
             res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
+    },
+    AllComment:async (req,res)=>{
+        let {dishes_id}=req.query
+        let CommentList=await UserContoller.AllComment(dishes_id)
+        if(CommentList){
+            res.send(CommentList)
         }
         else{
             res.send({state:stateCode.error})
