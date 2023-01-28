@@ -13,7 +13,7 @@ const server=axios.create({
 
 server.interceptors.request.use((config)=>{
     //无需登录的页面
-    let excludeData=['getAllDishe','getAllSeller','login','register','getSellerByID','getDisheByID','captcha']
+    let excludeData=['getAllDishe','getAllSeller','login','/user/register','getSellerByID','getDisheByID','captcha']
     for (const s of excludeData) {
         if(config.url.includes(s)){
             return config

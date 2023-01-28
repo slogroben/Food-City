@@ -16,7 +16,10 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="菜品图">
-                    <input type="file" ref="img" multiple>
+                    <input type="file" ref="img" @change="showImg" max="5" multiple>
+                    <span v-for=" (img,index) in dishes.dishes_imgs" :key="index">
+                        <img :src= img.url>
+                    </span>
                 </el-form-item>
                 <el-form-item label="菜品单价">
                     <el-input v-model="dishes.dishes_price"></el-input>
@@ -76,43 +79,57 @@ import { mapState } from 'vuex'
             }
         },
         computed:{
-            ...mapState(['seller'])
+            ...mapState(['seller','stateCode'])
         },
         methods:{
             submitdishe(){
-                let imgs=this.$refs.img.files
-                let pics=[]
-                for (const i of imgs) {
-                    pics.push(i)
-                }
-                console.log(pics);
                 let formData=new FormData()
                 let dishes={
                     dishes_title:this.dishes.dishes_title,
                     dishes_type:this.dishes.dishes_type,
-                    dishes_imgs:pics,
                     dishes_price:this.dishes.dishes_price-0,
                     dishes_description:this.dishes.dishes_description,
                     shop_id:this.seller.shop_id,
                 }
-                formData=dishes
-                server.post('/seller/pushDishe',pics)
+                for (const i of this.dishes.dishes_imgs) {
+                    formData.append('dishes_imgs',i)
+                }
+                for (const key in dishes) {
+                    if (Object.hasOwnProperty.call(dishes, key)) {
+                        formData.append(key,dishes[key])
+                    }
+                }
+                server.postReq('/seller/pushDishe',formData,{
+                        'Content-Type': 'multipart/form-data'
+                    })
                 .then(
                     response=>{
-                        console.log("请求成功"+response.data);
-                        this.$message({
-                            message: '提交菜品成功',
-                            type: 'success'
-                        })
-                        this.$mount()
-                        setTimeout(() => {
-                            this.$router.go()
-                        }, 1500);
+                        if(response.data.state==this.stateCode.success){
+                            this.$message({
+                                message: '提交菜品成功',
+                                type: 'success'
+                            })
+                            this.$mount()
+                            setTimeout(() => {
+                                //初始化
+                                this.dishes={
+                                    dishes_title:'',
+                                    dishes_type:'',
+                                    dishes_price:'',
+                                    dishes_description:'',
+                                    dishes_imgs:'',
+                                }
+                                this.$refs.img.files=null
+                            }, 1500);
+                        }
                     },
                     error=>{
                         console.log("请求失败");
                     }
                 )
+            },
+            showImg(){
+                this.dishes.dishes_imgs=this.$refs.img.files
             }
         }
     }

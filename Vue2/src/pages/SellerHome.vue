@@ -26,7 +26,7 @@
           <el-tab-pane label="我的店铺" name="1">
             <MySellerManage></MySellerManage>
           </el-tab-pane>
-          <el-tab-pane label="菜品管理" name="2">
+          <el-tab-pane label="菜品管理" name="2"  v-if="seller.shopstate==$store.state.shopstate.operate">
               <el-tabs v-model="activeName1" type="border-card">
                 <el-tab-pane label="发布菜品" name="2-1">
                     <PushDishe></PushDishe>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import Header from '../components/home/Header.vue'
 import MySellerManage from '../components/MySellerManage.vue'
 import PushDishe from '../components/DishesManage/PushDishe.vue'
@@ -68,6 +68,7 @@ export default {
       ...mapState(['seller']),
     },
     methods:{
+      ...mapActions(['checkUser','getSeller']),
       handleSelect(key, keyPath) {
         this.activeName=key.split('-')?key.split('-')[0]:key
         this.activeName1=key.split('-')?key:this.activeName1
@@ -78,6 +79,8 @@ export default {
     },
     mounted(){
       this.$store.dispatch('getSeller')
+      this.checkUser()
+      this.getSeller()
     }
     
 }

@@ -53,6 +53,7 @@
 import axios from 'axios'
 import qs from 'qs'
 import server from '@/utils/request'
+import { mapState } from 'vuex'
     export default {
         name:"UserLogin",
         data(){
@@ -80,7 +81,8 @@ import server from '@/utils/request'
             },
             textbtnflag(){
                 return true
-            }
+            },
+            ...mapState(['userType']),
         },
         methods:{
             textlogin(){
@@ -97,9 +99,15 @@ import server from '@/utils/request'
                     server.postReq('/user/login',qs.stringify(this.loginmsg))
                     .then(
                         response=>{
-                            this.$router.push({
-                                name:'homepage'
-                            })
+                            if(response.data.type==this.userType.root){
+                                this.$router.push({
+                                    name:'adminhome'
+                                })
+                            }else{
+                                this.$router.push({
+                                    name:'homepage'
+                                })
+                            }
                         },
                         error=>{
                             if(error.response.data.errCode==this.$store.state.stateCode.error){

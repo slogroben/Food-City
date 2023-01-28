@@ -211,12 +211,12 @@ import server from '@/utils/request'
                     response=>{
                         if(response.data.state==this.$store.state.stateCode.success){
                             this.$message({
-                                message: '开通店铺成功，请登录',
+                                message: '开通店铺成功',
                                 type: 'success'
                             })
                             setTimeout(() => {
                                 this.$router.push({
-                                    name:'sellerlogin'
+                                    name:'sellerhome'
                                 })
                             }, 1500);
                         }else{

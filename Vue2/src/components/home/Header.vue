@@ -58,9 +58,11 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
     export default {
         name:'Header',
         computed:{
+            ...mapState(['seller','shopstate']),
             user(){
                 return this.$store.state.user
             }
@@ -80,11 +82,17 @@
             },
             judgeType(){
                 if(this.user){
-                        if(this.user.type==this.$store.state.userType.seller){
-                        this.$router.push({name:'sellerhome'})
+                    if(this.user.type==this.$store.state.userType.seller){
+                        this.$router.push({name:'sellerhome'})                  
                     }
                     if(this.user.type==this.$store.state.userType.Normal){
                         this.$router.push({name:'sellerregister'})
+                    }
+                    if(this.user.type==this.$store.state.userType.root){
+                        this.$message({
+                            message:'管理员无需开店',
+                            type:'waring'
+                        })
                     }
                 }else{
                     this.$router.push({name:'userlogin'})
@@ -93,7 +101,7 @@
         },
         mounted(){
             let token=localStorage.getItem('token')
-            this.$store.dispatch('checkUser',token)  
+            this.$store.dispatch('checkUser',token)
         }
     }
 </script>

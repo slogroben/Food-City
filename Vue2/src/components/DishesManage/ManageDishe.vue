@@ -5,8 +5,8 @@
         <button @click="search">搜索</button>
     </div>
         <el-table
-            v-if="dishesList"
-            :data="dishesList"
+            v-if="showDishesList"
+            :data="showDishesList"
             stripe
             style="width: 100%">
             <el-table-column prop="dishes_title" :show-overflow-tooltip=true label="菜品标题" width="180"></el-table-column>
@@ -51,7 +51,7 @@
             <el-table-column fixed="right" label="操作" width="180">
             <template slot-scope='scope' >
                 <el-button type="text" size="small" @click="revise(scope.row)">修改</el-button>
-                <el-button type="text" size="small" @click="del(scope.row.dishes_id)">删除</el-button>
+                <el-button type="text" size="small" @click="del(scope.row)">删除</el-button>
             </template>
             </el-table-column>
         </el-table>
@@ -59,7 +59,7 @@
         v-if="thisDishes"
         :title="thisDishes.dishes_title"
         :visible.sync="revisevisable"
-        width="30%">
+        width="500px">
         <el-form label-width="80px">
             <el-form-item label="菜品标题">
                 <el-input v-model="thisDishes.dishes_title"></el-input>
@@ -70,32 +70,32 @@
             <el-form-item label="菜品图1">
                 <div>
                     <label>
-                        <input  type="file" @change="imgcharge($event,1)" ref="img1" :hidden="thisDishes.dishes_img1==''? false:true">
+                        <input ref="img1" type="file" @change="imgcharge($event)" :hidden="thisDishes.dishes_img1">
                         <img v-if="thisDishes.dishes_img1" :src="img(thisDishes.dishes_img1)" alt="图片未加载">
                     </label>
                 </div>
             </el-form-item>
             <el-form-item label="菜品图2">
                 <label>
-                    <input type="file" @change="imgcharge($event,2)" ref="img2" :hidden="thisDishes.dishes_img2==''? false:true">
+                    <input ref="img2" type="file" @change="imgcharge($event)" :hidden="thisDishes.dishes_img2">
                     <img v-if="thisDishes.dishes_img2" :src="img(thisDishes.dishes_img2)" alt="图片未加载">
                 </label>
             </el-form-item>
             <el-form-item label="菜品图3">
                 <label>
-                    <input type="file" @change="imgcharge($event,3)" ref="img3" :hidden="thisDishes.dishes_img3==''? false:true">
+                    <input ref="img3" type="file" @change="imgcharge($event)" :hidden="thisDishes.dishes_img3">
                     <img v-if="thisDishes.dishes_img3" :src="img(thisDishes.dishes_img3)" alt="图片未加载">
                 </label>
             </el-form-item>
             <el-form-item label="菜品图4">
                 <label>
-                    <input type="file" @change="imgcharge($event,4)" ref="img4" :hidden="thisDishes.dishes_img4==''? false:true">
+                    <input ref="img4" type="file" @change="imgcharge($event)" :hidden="thisDishes.dishes_img4">
                     <img v-if="thisDishes.dishes_img4" :src="img(thisDishes.dishes_img4)" alt="图片未加载">
                 </label>
             </el-form-item>
             <el-form-item label="菜品图5">
                 <label>
-                    <input  type="file" @change="imgcharge($event,5)" ref="img5" :hidden="thisDishes.dishes_img5==''? false:true">
+                    <input ref="img5"  type="file" @change="imgcharge($event)" :hidden="thisDishes.dishes_img5">
                     <img v-if="thisDishes.dishes_img5" :src="img(thisDishes.dishes_img5)" alt="图片未加载">
                 </label>
             </el-form-item>
@@ -127,9 +127,7 @@ export default {
             keyword:'',
             showDishesList:'',
             revisevisable:false,
-            thisDishes:'',
-            oldDishes:'',
-            newDishes:''
+            thisDishes:''
         }
     },
     computed:{
@@ -141,10 +139,7 @@ export default {
             .then(
                 response=>{
                     this.dishesList=response.data
-                    // this.showDishesList.forEach(d => {
-                    //             d.isEdit=false
-                    //             return 
-                    //         });
+                    this.showDishesList=this.dishesList
                 },
                 error=>{
                     console.log("请求失败");
@@ -153,35 +148,48 @@ export default {
         },
         revise(dishes){
                  this.revisevisable=true
-                 this.oldDishes=dishes
-                 this.thisDishes=dishes    
-                 this.newDishes=dishes     
+                 this.thisDishes=dishes
             },
         saveRevise(){
             let formData = new FormData()
-            formData=this.thisDishes
-            axios({
-                method:'post',
-                url:'http://localhost:8080/My/DishesReviseServlet',
-                data:formData,
-                headers: {
+            let dishe=this.thisDishes
+            for (const key in dishe) {
+                if(key.includes('dishes_img')){
+                    let index=key.replace('dishes_img','')
+                    let file=this.$refs[`img${index}`].files[0]
+                    if(file){
+                        formData.append('oldpic',dishe[key])
+                        formData.append(key,file)
+                    }else{
+                        formData.append(key,dishe[key])
+                    }
+                }else{
+                    formData.append(key,dishe[key])
+                }
+            }
+            server.postReq('/seller/reDishe',formData,{
                         'Content-Type': 'multipart/form-data'
                     }
-            }).then(
+                ).then(
                 response=>{
                     this.revisevisable = false
+                    this.$message({
+                        message:'修改成功',
+                        type:'success'
+                    })
                 },
                 error=>{
-                    console.log(error);
+                    this.revisevisable = false
+                    this.$message({
+                        message:'修改失败,出现未知错误',
+                        type:'error'
+                    })
                 }
             )   
-            this.$mount()             
+            this.getDishesList()            
         },
-        del(dishes_id){
-            axios({
-                method:'get',
-                url:'http://localhost:8080/My/DishesDelServlet?dishes_id='+dishes_id,
-            })
+        del(dishe){
+            server.postReq('/seller/deleteDishe',dishe)
             .then(
                 response=>{
                     this.getDishesList()
@@ -191,7 +199,6 @@ export default {
                 }
             )
             this.getDishesList()
-            this.$mount()
         },
         search(){
             this.showDishesList=this.dishesList.filter(d=>{
@@ -203,20 +210,10 @@ export default {
             return require('@/assets/upload/'+imgname)
         },
         imgcharge(event,num){
-            if(num==1){
-                this.thisDishes.dishes_img1=this.$refs.img1.files[0]
-            }
-            if(num==2){
-                this.thisDishes.dishes_img2=this.$refs.img2.files[0]
-            }
-            if(num==3){
-                this.thisDishes.dishes_img3=this.$refs.img3.files[0]
-            }
-            if(num==4){
-                this.thisDishes.dishes_img4=this.$refs.img4.files[0]
-            }
-            if(num==5){
-                this.thisDishes.dishes_img5=this.$refs.img5.files[0]
+            let reads=new FileReader()
+            reads.readAsDataURL(event.target.files[0])
+            reads.onload=(e)=>{
+                event.target.parentNode.children[1].src=reads.result
             }
         }
     },

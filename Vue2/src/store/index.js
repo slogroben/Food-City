@@ -49,7 +49,7 @@ const actions={
                 }
             },
             error=>{
-                // console.log(error);
+                localStorage.removeItem(token)
             }
         )
     },

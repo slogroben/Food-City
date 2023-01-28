@@ -31,70 +31,54 @@
                 </template>
             </el-table-column>
         </el-table>
-    <!-- <table>
-        <tr>
-            <th>店铺id</th>
-            <th>店铺名称</th>
-            <th>店铺地址</th>
-            <th>详细地址</th>
-            <th>店铺类型</th>
-            <th>营业状态</th>
-            <th>店铺手机</th>
-            <th>营业时间</th>
-            <th>上传图片</th>
-            <th>店铺描述</th>
-            <th>店主手机</th>
-            <th>是否取消资格</th>
-        </tr>
-        <tr v-for="s in sellerList" :key="s.id">
-            <td>{{s.shop_id}}</td>
-            <td>{{s.shopname}}</td>
-            <td>{{s.area}}</td>
-            <td>{{s.address}}</td>
-            <td>{{s.shoptype}}</td>
-            <td>{{s.state}}</td>
-            <td>{{s.shopphone}}</td>
-            <td>{{s.worktime}}</td>
-            <td>{{s.imgurl}}</td>
-            <td>{{s.description}}</td>
-            <td>{{s.sellerphone}}</td>
-            <td>
-                <button @click="del(s)">取消商家经营资格</button>
-            </td>
-        </tr>
-    </table> -->
+        <el-pagination
+            :current-page="pageInfo.page"
+            @current-change="handleCurrentChange"
+            @prev-click="prevPage"
+            @next-click="nextPage"
+            :page-size="pageInfo.size"
+            background
+            layout="total,prev, pager, next,jumper"
+            :total="pageInfo.allpage">
+        </el-pagination>
     </div>
 </template>
 
 <script>
 import axios from 'axios'
+import server from '@/utils/request'
+import { mapState } from 'vuex'
 export default {
     name:'SellerDel',
     data(){
         return{
             sellerList:'',
+            pageInfo:{
+                    page:1,
+                    size:4,
+                    allpage:9999
+                }
         }
+    },
+    computed:{
+        ...mapState(['shopstate'])
     },
     methods:{
         del(s){
-            axios({
-                method:'get',
-                url:'http://localhost:8080/My/AdminDelSellerServlet?shop_id='+s.shop_id
-                })
+            server.getReq('/admin/delSeller?shop_id='+s.shop_id)
                 .then(
                     response=>{
-                        this.sellerList=response.data
+                        this.getSellerNum()
+                        this.getSellerList()
                     },
                     error=>{
                         console.log(error);
                     }
                 )
         },
-        getSeller(){
-                axios({
-                method:'get',
-                url:'http://localhost:8080/My/AdminOperateSellerServlet'
-                })
+        getSellerList(){
+                let offset=(this.pageInfo.page-1)*this.pageInfo.size
+                server.getReq('/admin/getOperateShop?limit='+this.pageInfo.size+'&offset='+offset)
                 .then(
                     response=>{
                         this.sellerList=response.data
@@ -107,10 +91,33 @@ export default {
         img(path){
             const imgname=path.replace('D:\\study\\myproject\\project1\\src\\assets\\shopImg\\','')
             return require('@/assets/shopImg/'+imgname)
-        }
+        },
+        getSellerNum(){
+            server.getReq('/admin/getOperateShopNum')
+            .then(
+                response=>{
+                    this.pageInfo.allpage=response.data.sellerNum
+                },
+                error=>{
+                    console.log(error);
+                }
+            )
+        },
+        handleCurrentChange(page){
+            this.pageInfo.page=page
+            this.getSellerNum()
+            this.getSellerList()
+        },
+        prevPage(page){
+            this.pageInfo.page=page
+        },
+        nextPage(page){
+            this.pageInfo.page=page
+        }  
     },
     mounted(){
-        this.getSeller()
+        this.getSellerList()
+        this.getSellerNum()
     }
 }
 </script>

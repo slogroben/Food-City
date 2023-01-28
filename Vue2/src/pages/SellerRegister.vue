@@ -2,7 +2,7 @@
 <div class="body">
     <div class="box1">
         <h1>&emsp;商家注册</h1>
-        <p style="position: absolute;top:60px;color: gray; margin: 0px 0px 0 30px;">已经拥有店铺？<router-link active-class="lode" :to="{name:'sellerlogin'}">登录</router-link></p>
+        <p style="position: absolute;top:60px;color: gray; margin: 0px 0px 0 30px;">欢迎商家入驻</p>
         <hr>
         <div class="phonebox">
             手机号码：<input v-model="phone" @blur="rephone" type="text"  placeholder="请输入手机号码" ref="phoneinput">
