@@ -4,7 +4,7 @@ const OrderController = require("../Controllers/OrderController")
 
 const getTime = require("../util/getTime")
 const JWT = require("../util/jwt")
-const { stateCode } = require("../util/messageCode")
+const { stateCode, userType } = require("../util/messageCode")
 
 const UserService={
     userRegister:async (req,res)=>{
@@ -25,6 +25,7 @@ const UserService={
             res.header('Authorization',token)
             //暴露Authorization
             res.setHeader("Access-Control-Expose-Headers", "Authorization");
+            res.send({type:user.type})
             res.end()
         }
         else{

@@ -13,14 +13,17 @@
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "express-session": "^1.17.3",
+    "fs": "^0.0.1-security",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^2.3.3",
+    "nanoid": "^4.0.0",
     "nodemon": "^2.0.20",
     "pug": "2.0.0-beta11",
     "redis": "^4.5.1",
-    "svg-captcha": "^1.4.0"
+    "svg-captcha": "^1.4.0",
+    "uuid": "^9.0.0"
   }
 }

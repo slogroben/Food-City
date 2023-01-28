@@ -2,15 +2,36 @@ const express=require('express')
 const SellerService = require('../Services/SellerService')
 const router=express.Router()
 
+//引入nanoid，生成图片名
+const UUID=require('uuid')
+
 const multer  = require('multer')
-const upload = multer({ dest: 'D:/study/myproject/project1/src/assets/shopImg/' })
+const storagePath = require('../util/storagePath')
+const storageDish=multer.diskStorage({
+    destination:(req,file,cb)=>{
+        cb(null,storagePath.dishesImg)
+    },
+    filename:(req,file,cb)=>{
+        cb(null,UUID.v4()+'.jpg')
+    }
+})
+const storageShop=multer.diskStorage({
+    destination:(req,file,cb)=>{
+        cb(null,storagePath.shopImg)
+    },
+    filename:(req,file,cb)=>{
+        cb(null,UUID.v4()+'.jpg')
+    }
+})
+const uploadShop = multer({ storage:storageShop})
+const uploadDishes = multer({ storage:storageDish })
 
 
 router.get('/login',(req,res)=>{
     SellerService.sellerLogin(req,res)
 })
 
-router.post('/register',upload.single('imgurl'),(req,res)=>{
+router.post('/register',uploadShop.single('imgurl'),(req,res)=>{
     SellerService.sellerRegister(req,res)
 })
 
@@ -27,8 +48,21 @@ router.get('/getMyDishes',(req,res)=>{
     SellerService.getMyDishes(req,res)
 })
 
-router.post('/pushDishe',upload.array('dishes_imgs',5),(req,res)=>{
+router.get('/reShopState',(req,res)=>{
+    SellerService.reShopState(req,res)
+})
+
+router.post('/pushDishe',uploadDishes.array('dishes_imgs',5),(req,res)=>{
     SellerService.pushDishe(req,res)
 })
+
+router.post('/deleteDishe',(req,res)=>{
+    SellerService.deleteDishe(req,res)
+})
+
+router.post('/reDishe',uploadDishes.any(),(req,res)=>{
+    SellerService.reDishe(req,res)
+})
+
 
 module.exports=router

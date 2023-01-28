@@ -7,6 +7,8 @@ var seller=require('./routers/seller')
 var user=require('./routers/user')
 var order=require('./routers/order')
 var captcha=require('./routers/captcha')
+var admin=require('./routers/admin')
+
 
 //二进制图片处理
 const multer=require('multer')
@@ -86,4 +88,5 @@ app.use('/dishe',dishe)
 app.use('/seller',seller)
 app.use('/order',order)
 app.use('/captcha',captcha)
+app.use('/admin',admin)
 
