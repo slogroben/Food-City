@@ -1,5 +1,6 @@
 <template>
     <div>
+    <el-card>
         <el-table
             v-if="sellerList"
             :data="sellerList"
@@ -17,7 +18,7 @@
                 <template slot-scope="s">
                     <el-image
                         v-if="s.row.imgurl"
-                        style="width: 100px; height: 100px"
+                        style="width: 100px; height: 90px"
                         fit="contain"
                         :src="img(s.row.imgurl)">
                     </el-image>
@@ -36,11 +37,13 @@
             @current-change="handleCurrentChange"
             @prev-click="prevPage"
             @next-click="nextPage"
+            style="margin:30px 0 0 350px;"
             :page-size="pageInfo.size"
             background
             layout="total,prev, pager, next,jumper"
             :total="pageInfo.allpage">
         </el-pagination>
+    </el-card>
     </div>
 </template>
 
@@ -68,6 +71,10 @@ export default {
             server.getReq('/admin/delSeller?shop_id='+s.shop_id)
                 .then(
                     response=>{
+                        this.$message({
+                            message:'取消商家资格成功',
+                            type:"success"
+                        })
                         this.getSellerNum()
                         this.getSellerList()
                     },

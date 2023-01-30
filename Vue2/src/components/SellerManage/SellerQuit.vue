@@ -1,5 +1,6 @@
 <template>
-     <div>
+  <div>
+    <el-card>
         <el-table
             v-if="sellerList"
             :data="sellerList"
@@ -17,7 +18,7 @@
                 <template slot-scope="s">
                     <el-image
                         v-if="s.row.imgurl"
-                        style="width: 100px; height: 100px"
+                        style="width: 100px; height: 90px"
                         fit="contain"
                         :src="img(s.row.imgurl)">
                     </el-image>
@@ -39,10 +40,12 @@
             @prev-click="prevPage"
             @next-click="nextPage"
             :page-size="pageInfo.size"
+            style="margin:30px 0 0 350px;"
             background
             layout="total,prev, pager, next,jumper"
             :total="pageInfo.allpage">
         </el-pagination>
+    </el-card>
   </div>
 </template>
 

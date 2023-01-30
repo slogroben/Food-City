@@ -101,7 +101,7 @@ import { mapState } from 'vuex'
                         response=>{
                             if(response.data.type==this.userType.root){
                                 this.$router.push({
-                                    name:'adminhome'
+                                    name:'adminfirstpage'
                                 })
                             }else{
                                 this.$router.push({

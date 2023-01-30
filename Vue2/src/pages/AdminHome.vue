@@ -5,7 +5,7 @@
         <img src="../../public/img/logo/logo_long.png" width="200px" height="100px">
       </div>
       <el-menu
-        default-active="2"
+        default-active="0"
         class="leftmenu"
         @open="handleOpen"
         @close="handleClose"
@@ -13,6 +13,7 @@
         background-color="#545c64"
         text-color="#fff"
         active-text-color="#ffd04b">
+        <el-menu-item index="0">首页</el-menu-item>
         <el-submenu index="1">
             <template slot="title">
               <i class="el-icon-location"></i>
@@ -31,14 +32,38 @@
         </el-submenu>
       </el-menu>
     </div>
+    <div class="header">
+      <div class="header-left">
+        <el-breadcrumb text-color="red" separator-class="el-icon-arrow-right">
+          <el-breadcrumb-item v-for="t in tags " :key="t.name">{{t.name}}</el-breadcrumb-item>
+        </el-breadcrumb>
+      </div>
+      <div class="header-right">
+          <el-dropdown @command="handleCommand">
+            <span class="el-dropdown-link">
+              <el-avatar v-if="!user.imgurl" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+              <el-avatar v-if="user.imgurl" :src="imgPath.userImg(user.imgurl)"></el-avatar>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-s-home" command="myhome">个人中心</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-close" command="exit">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+      </div>
+    </div>
     <div class="rightbox">
       <div class="right-top">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-          <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-          <el-breadcrumb-item>活动详情</el-breadcrumb-item>
-        </el-breadcrumb>
+        <el-button 
+        v-for="t in tags "
+        :key="t.name"
+        type="primary" 
+        size="small"
+        round
+        :plain="t.plain"
+        @click="tagRouter(t)"
+        >
+        {{t.name}}<i v-if="t.name!='首页'" @click="delTag(t)" class="el-icon-close el-icon--right"></i>
+        </el-button>
       </div>
       <div class="right-page">
         <router-view></router-view>
@@ -49,14 +74,47 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+import imgPath from '../utils/imgPath'
 export default {
     name:'AdminHome',
     data(){
       return{
-
+        imgPath,
+        that: '2-2',
+        pageList:{
+          '0':{
+            name:'首页',
+            route:'adminfirstpage'
+          },
+          '1-1':{
+            name:'会员信息',
+            route:'usermanage'
+          },
+          '2-1':{
+            name:'商家入驻申请',
+            route:'sellerisPass'
+          },
+          '2-2':{
+            name:'商家退出申请',
+            route:'sellerquit'
+          },
+          '2-3':{
+            name:'取消商家经营资格',
+            route:'sellerdel'
+          },
+        }
+        ,
+        tags: [
+          { name: '首页', index: '0' ,route:'adminfirstpage',closable:false,plain:true},
+        ]
       }
     },
+    computed:{
+      ...mapState(['user'])
+    },
     methods:{
+      ...mapActions(['checkUser']),
       handleOpen(key, keyPath) {
         console.log(key, keyPath);
       },
@@ -64,19 +122,51 @@ export default {
         console.log(key, keyPath);
       },
       handleSelect(key, keyPath) {
-        if(key=='1-1'){
-          this.$router.push({name:'usermanage'})
+          if(!this.$route.path.includes(this.pageList[key].route)){
+            this.$router.push({name:this.pageList[key].route})
+          }
+          this.tags.forEach(t=>{
+                t.plain=true
+                if(t.index==key){
+                  t.plain=false
+                }
+              })
+          for (const t of this.tags) {
+            if(t.index==key){
+              return
+            }
+          }
+          this.tags.push({name:this.pageList[key].name,index:key,route:this.pageList[key].route})
+      },
+      delTag(tag){
+        this.tags=this.tags.filter(t=>{
+          return t.name!=tag.name
+        })
+      },
+      tagRouter(tag){
+        this.tags.forEach(t=>{
+                t.plain=true
+                if(t==tag){
+                  t.plain=false
+                }
+              })
+        if(!this.$route.path.includes(tag.route)){
+          this.$router.push({name:tag.route})
         }
-        if(key=='2-1'){
-          this.$router.push({name:'sellerisPass'})
+      },
+      handleCommand(command){
+        console.log(111);
+        if(command=='myhome'){
+          this.$router.push({name:'adminfirstpage'})
         }
-        if(key=='2-2'){
-          this.$router.push({name:'sellerquit'})
-        }
-        if(key=='2-3'){
-          this.$router.push({name:'sellerdel'})
+        if(command=='exit'){
+          localStorage.removeItem('token')
+          this.$router.push({name:'userlogin'})
         }
       }
+    },
+    mounted(){
+      this.checkUser(localStorage.getItem('token'))
     }
     
 }
@@ -94,7 +184,7 @@ body{
 }
 .rightbox{
   position: relative;
-  margin: 0 0 0 300px;
+  margin: 0 25px 0 275px;
   padding: 0;
 }
 .leftmenu{
@@ -109,15 +199,31 @@ body{
 }
 .right-top{
   position: relative;
-  padding: 20px 0 0 20px;
+  padding: 20px 0px 0 0px;
   height: 40px;
-  background-color: #545c64;
   overflow: hidden;
+}
+.header{
+  margin: 0 0 10px 250px;
+  height: 50px;
+  background-color: black;
+  overflow: hidden;
+}
+.header-left{
+  color: white;
+  margin: 20px 100px 0 10px;
+}
+.header-right{
+  position:relative;
+  top: -30px;
+  float:right;
+  right: 0;
+  overflow: hidden;
+  margin: 0 30px 0 0;
 }
 .right-page{
   margin: 10px 0 0 0;
   width: 100%;
-  background-color: bisque;
-  height: 89vh;
+  height: 79vh;
 }
 </style>

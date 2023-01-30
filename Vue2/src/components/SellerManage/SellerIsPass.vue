@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-table
+    <el-card>
+        <el-table
             v-if="sellerList"
             :data="sellerList"
             stripe
@@ -17,7 +18,7 @@
                 <template slot-scope="s">
                     <el-image
                         v-if="s.row.imgurl"
-                        style="width: 100px; height: 100px"
+                        style="width: 100px; height: 90px"
                         fit="contain"
                         :src="img(s.row.imgurl)" alt="1">
                     </el-image>
@@ -37,11 +38,13 @@
             @current-change="handleCurrentChange"
             @prev-click="prevPage"
             @next-click="nextPage"
+            style="margin:30px 0 0 350px;"
             :page-size="pageInfo.size"
             background
             layout="total,prev, pager, next,jumper"
             :total="pageInfo.allpage">
         </el-pagination>
+    </el-card>
   </div>
 </template>
 

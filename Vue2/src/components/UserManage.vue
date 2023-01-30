@@ -1,8 +1,22 @@
 <template>
   <div>
+    <div class="top">
+        <div>
+            <el-button style="margin: 0 0 0 10px;" type="primary" @click="open" slot="append" icon="el-icon-plus">新增</el-button>
+        </div>
+        <div class="top-right">
+            <el-input
+                style="width: 200px;"
+                placeholder="根据用户名查询"
+                ref="keyword"
+                >
+                <i slot="prefix" class="el-input__icon el-icon-search"></i>
+            </el-input>
+            <el-button style="margin: 0 0 0 10px;" type="primary" @click="search" slot="append" icon="el-icon-search">搜索</el-button>
+        </div>
+    </div>
     <div>
-        <input type="text" ref="keyword" placeholder="根据用户名查询">
-        <button @click="search">搜索</button>
+    <el-card class="box-card">
         <el-table
             v-if="showuserList"
             :data="showuserList"
@@ -20,16 +34,19 @@
             </template>
             </el-table-column>
         </el-table>
+    
         <el-pagination
             :current-page="pageInfo.page"
             @current-change="handleCurrentChange"
             @prev-click="prevPage"
             @next-click="nextPage"
             :page-size="pageInfo.size"
+            style="margin:30px 0 0 350px;"
             background
             layout="total,prev, pager, next,jumper"
             :total="pageInfo.allpage">
         </el-pagination>
+    </el-card>
         <!-- 修改账户 -->
         <el-dialog
         title="修改账户信息"
@@ -68,7 +85,45 @@
                 </template>
             </el-table-column>
         </el-table>
-        </el-dialog>       
+        </el-dialog> 
+        <!--新增用户-->  
+        <el-dialog
+        title="添加新用户"
+        :visible.sync="addDialog"
+        width="50%">
+        <el-form label-width="80px">
+            <el-form-item label="账户名">
+                <el-input v-model="newUser.username"></el-input>
+            </el-form-item>
+            <el-form-item label="账户密码">
+                <el-input v-model="newUser.password"></el-input>
+            </el-form-item>
+            <el-form-item label="用户号码">
+                <el-input v-model="newUser.phone"></el-input>
+            </el-form-item>
+            <el-form-item label="上传图片">
+                <div>
+                    <label>
+                        <i class="imgbox el-icon-plus" ref="startbox"></i>
+                        <input type="file" ref="img" @change="showImg" style="display: none;">
+                        <img class="img"  ref="pic" src="" style="display:none">
+                    </label>
+                </div>
+            </el-form-item>
+            <el-form-item label="用户类型">
+                <el-radio-group v-model="newUser.type" size="mini">
+                    <el-radio  label="2" border size="medium">普通用户</el-radio>
+                    <el-radio  label="1" border size="medium">商家</el-radio>
+                    <el-radio  label="0" border size="medium">超级管理员</el-radio>
+                </el-radio-group>
+                
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="addDialog = false">取 消</el-button>
+            <el-button type="primary" @click="addUser">确 定</el-button>
+        </span>
+        </el-dialog>    
     </div>
   </div>
 </template>
@@ -93,6 +148,14 @@ import { mapState } from 'vuex'
                     page:1,
                     size:8,
                     allpage:9999
+                },
+                addDialog:false,
+                newUser:{
+                    username:'',
+                    password:'',
+                    phone:'',
+                    imgurl:'',
+                    type:'2',
                 }
             }
         },
@@ -185,6 +248,10 @@ import { mapState } from 'vuex'
                 server.get('/admin/delUser?user_id='+id)
                 .then(
                     response=>{
+                        this.$message({
+                            message:'删除用户成功',
+                            type:"success"
+                        })
                         this.getAllUserPart()
                     },
                     error=>{
@@ -202,6 +269,66 @@ import { mapState } from 'vuex'
             },
             nextPage(page){
                 this.pageInfo.page=page
+            },
+            open(){
+                this.addDialog=true
+            },
+            addUser(){
+                if(!this.newUser.username.trim()){
+                    this.$message({
+                        message:'用户名不能为空',
+                        type:'error'
+                    })
+                    return
+                }
+                if(!this.newUser.password.trim()){
+                    this.$message({
+                        message:'密码不能为空',
+                        type:'error'
+                    })
+                    return
+                }
+                if(!this.newUser.phone.trim()){
+                    this.$message({
+                        message:'电话号码不能为空',
+                        type:'error'
+                    })
+                    return
+                }
+                let formData=new FormData()
+                for (const t in this.newUser) {
+                    if (Object.hasOwnProperty.call(this.newUser, t)) {
+                        formData.append(t,this.newUser[t])
+                    }
+                }
+                server.postReq('/admin/addUser',formData,{
+                        'Content-Type': 'multipart/form-data'
+                    })
+                .then(
+                    response=>{
+                        this.addDialog=true
+                        this.$message({
+                            message:'新增用户成功',
+                            type:'success'
+                        })
+                        this.getUserNum()
+                        this.getAllUserPart()
+                    },
+                    error=>{
+
+                    }
+                )
+            },
+            showImg(){
+                let reader=new FileReader()
+                let img=this.$refs.img.files[0]
+                this.$refs.startbox.style.display='none'
+                reader.readAsDataURL(img)
+                reader.onload=()=>{
+                    this.$refs.pic.style.display='block'
+                    this.$refs.pic.src=reader.result
+                    this.newUser.imgurl=img
+                }
             }
         },
         mounted(){
@@ -215,4 +342,30 @@ import { mapState } from 'vuex'
 li{
     list-style: none;
 }
+.top{
+    margin: 10px 0 10px 0;
+}
+.top>div{
+    display: inline-block;
+}
+.top-right{
+    float: right;
+}
+.imgbox {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    position: relative;
+    width: 178px;
+    height: 178px;
+    text-align:center;
+    line-height:188px;
+    font-size: 50px;
+  }
+.imgbox:hover {
+    border-color: #409EFF;
+  }
+  .img{
+    width: 178px;
+    height: 178px;
+  }
 </style>

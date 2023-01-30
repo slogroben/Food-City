@@ -9,6 +9,9 @@ import SellerRegisterMessage from '/src/pages/SellerRegisterMessage'
 import SellerLogin from '/src/pages/SellerLogin'
 import AdminHome from '/src/pages/AdminHome'
 import AdminLogin from '/src/pages/AdminLogin'
+import AdminFirstPage from '/src/components/AdminFirstPage'
+
+
 
 import UserManage from '/src/components/UserManage'
 import DishesSearch from '/src/pages/DishesSearch'
@@ -150,11 +153,19 @@ const router = new VueRouter({
                 title:'欢迎您！管理员'
             },
             children:[
+                //后台首页
+                {
+                    name:'adminfirstpage',
+                    path:'adminfirstpage',
+                    component:AdminFirstPage
+                },
+                //用户管理
                 {
                     name:"usermanage",
                     path:"/usermanage",
                     component:UserManage,
                 },
+                //店铺管理
                 {
                     name:"sellermanage",
                     path:"/sellermanage",
