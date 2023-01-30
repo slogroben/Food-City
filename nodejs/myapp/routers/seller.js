@@ -7,7 +7,7 @@ const UUID=require('uuid')
 
 const multer  = require('multer')
 const storagePath = require('../util/storagePath')
-const storageDish=multer.diskStorage({
+const storageDishe=multer.diskStorage({
     destination:(req,file,cb)=>{
         cb(null,storagePath.dishesImg)
     },
@@ -24,7 +24,7 @@ const storageShop=multer.diskStorage({
     }
 })
 const uploadShop = multer({ storage:storageShop})
-const uploadDishes = multer({ storage:storageDish })
+const uploadDishes = multer({ storage:storageDishe })
 
 
 router.get('/login',(req,res)=>{

@@ -2,6 +2,21 @@ const express=require('express')
 const AdminService = require('../Services/AdminService')
 const router=express.Router()
 
+const multer=require('multer')
+const UUID=require('uuid')
+const storagePath = require('../util/storagePath')
+
+const storageUser=multer.diskStorage({
+    destination:(req,file,cb)=>{
+        cb(null,storagePath.userImg)
+    },
+    filename:(req,file,cb)=>{
+        cb(null,UUID.v4()+'.jpg')
+    }
+})
+const uploadUser=multer({storage:storageUser})
+
+
 router.get('/getAllUser',(req,res)=>{
     AdminService.getAllUser(req,res)
 })
@@ -55,4 +70,7 @@ router.get('/delSeller',(req,res)=>{
     AdminService.delSeller(req,res)
 })
 
+router.post('/addUser',uploadUser.single('imgurl'),(req,res)=>{
+    AdminService.addUser(req,res)
+})
 module.exports=router

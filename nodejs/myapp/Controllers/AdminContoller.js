@@ -142,6 +142,31 @@ const AdminContoller={
             return stateCode.error
         }
     },
+    addUser:async (data)=>{
+        let {username,password,phone,imgurl,type}=data
+        try {
+            let result=await promisePool.query('insert into `user` value(null,?,?,?,?,?,null)',[username,password,phone,imgurl,type])
+            return stateCode.success
+        } catch (err) {
+            return stateCode.error
+        }
+    },
+    getUserByID:async (id)=>{
+        try {
+            let user=await promisePool.query('select * from `user` where id=?',id)
+            return user[0]
+        } catch (err) {
+            return stateCode.error
+        }
+    },
+    getSellerByID:async (shop_id)=>{
+        try {
+            let seller=await promisePool.query('select * from `shop` where shop_id=?',shop_id)
+            return seller[0]
+        } catch (err) {
+            return stateCode.error
+        }
+    },
 }
 
 

@@ -1,6 +1,10 @@
 const AdminContoller = require("../Controllers/AdminContoller")
 const { stateCode, stateMsg } = require("../util/messageCode")
 
+const fs=require('fs')
+const UserContoller = require("../Controllers/UserContoller")
+const fileOperation = require("../util/fileOperation")
+
 const AdminService={
     getAllUser:async(req,res)=>{
         let userlist=await AdminContoller.getAllUser()
@@ -47,6 +51,10 @@ const AdminService={
     },
     delUser:async(req,res)=>{
         let user_id=req.query.user_id
+        let user=await AdminContoller.getUserByID(user_id)
+        if(user[0]&&user[0].imgurl){
+            await fileOperation.delUser(user[0].imgurl)
+         }
         let result=await AdminContoller.delUser(user_id)
         if(result){
             res.send({state:stateCode.success,msg:stateMsg.success})
@@ -118,11 +126,25 @@ const AdminService={
     },
     delSeller:async(req,res)=>{
         let shop_id=req.query.shop_id
+        let seller=await AdminContoller.getSellerByID(shop_id)
+        if(seller[0]&&seller[0].imgurl){
+            await fileOperation.delSeller(seller[0].imgurl)
+        }
         let result=await AdminContoller.delSeller(shop_id)
         if(result){
             res.send({state:stateCode.success,msg:stateMsg.success})
         }else{
             res.send({state:stateCode.error,msg:stateMsg.error})
+        }
+    },
+    addUser:async (req,res)=>{
+        req.body.imgurl=req.file.filename
+        let result=await AdminContoller.addUser(req.body)
+        if(result==stateCode.success){
+            res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
         }
     },
 }

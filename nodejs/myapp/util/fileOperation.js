@@ -8,6 +8,20 @@ const fileOperation={
                 console.log(error);
             }
         })
+    },
+    delUser:(name)=>{
+        fs.unlink(storagePath.userImg+'/'+name,error=>{
+            if(error){
+                console.log(error);
+            }
+        })
+    },
+    delSeller:(name)=>{
+        fs.unlink(storagePath.shopImg+'/'+name,error=>{
+            if(error){
+                console.log(error);
+            }
+        })
     }
     
 }
