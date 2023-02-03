@@ -31,6 +31,17 @@ const AdminContoller={
             return stateCode.error
         }
     },
+    getKeyUserPart:async(data)=>{
+        try {
+            data.keyword='%'+data.keyword+"%"
+            let userlist=await promisePool.query('select * from `user` where type!=? and username like ? limit ? offset ?',[userType.root,data.keyword,data.limit,data.offset])
+            let userlistAll=await promisePool.query('select * from `user` where type!=? and username like ?',[userType.root,data.keyword])
+            return {userlist:userlist[0],num:userlistAll[0].length}
+        } catch (error) {
+            console.log(error);
+            return stateCode.error
+        }
+    },
     getUserOrder:async(user_id)=>{
         try {
             let orderlist=await promisePool.query('select * from `order` where user_id=?',user_id)
@@ -45,11 +56,12 @@ const AdminContoller={
             data.username,
             data.password,
             data.phone,
+            data.imgname,
             data.id
         ]
         try {
             let orderlist=await promisePool.query(
-                'update `user` set username=?,password=?,phone=?  where id=?'
+                'update `user` set username=?,password=?,phone=?,imgurl=? where id=?'
                 ,arr)
             return stateCode.success
         } catch (error) {
@@ -77,6 +89,17 @@ const AdminContoller={
             return stateCode.error
         }
     },
+    getKeySellerIsPass:async(data)=>{
+        try {
+            data.keyword='%'+data.keyword+"%"
+            let sellerlist=await promisePool.query('select * from `shop` where shopstate=? and shopname like ? limit ? offset ?',[shopstate.review,data.keyword,data.limit,data.offset])
+            let sellerlistAll=await promisePool.query('select * from `shop` where shopstate=? and shopname like ?',[shopstate.review,data.keyword])
+            return {sellerlist:sellerlist[0],num:sellerlistAll[0].length}
+        } catch (error) {
+            console.log(error);
+            return stateCode.error
+        }
+    },
     getSellerIsPassNum:async()=>{
         try {
             let sellerlist=await promisePool.query('select * from `shop` where shopstate=?',shopstate.review)
@@ -99,6 +122,17 @@ const AdminContoller={
         try {
             let sellerList=await promisePool.query('select * from `shop` where shopstate=? limit ? offset ?',[shopstate.isquit,data.limit,data.offset])
             return sellerList[0]
+        } catch (error) {
+            console.log(error);
+            return stateCode.error
+        }
+    },
+    getKeySellerIsQuit:async(data)=>{
+        try {
+            data.keyword='%'+data.keyword+"%"
+            let sellerlist=await promisePool.query('select * from `shop` where shopstate=? and shopname like ? limit ? offset ?',[shopstate.isquit,data.keyword,data.limit,data.offset])
+            let sellerlistAll=await promisePool.query('select * from `shop` where shopstate=? and shopname like ?',[shopstate.isquit,data.keyword])
+            return {sellerlist:sellerlist[0],num:sellerlistAll[0].length}
         } catch (error) {
             console.log(error);
             return stateCode.error
@@ -142,6 +176,17 @@ const AdminContoller={
             return stateCode.error
         }
     },
+    getKeyDelSeller:async(data)=>{
+        try {
+            data.keyword='%'+data.keyword+"%"
+            let sellerlist=await promisePool.query('select * from `shop` where shopstate=? and shopname like ? limit ? offset ?',[shopstate.operate,data.keyword,data.limit,data.offset])
+            let sellerlistAll=await promisePool.query('select * from `shop` where shopstate=? and shopname like ?',[shopstate.operate,data.keyword])
+            return {sellerlist:sellerlist[0],num:sellerlistAll[0].length}
+        } catch (error) {
+            console.log(error);
+            return stateCode.error
+        }
+    },
     addUser:async (data)=>{
         let {username,password,phone,imgurl,type}=data
         try {
@@ -164,6 +209,21 @@ const AdminContoller={
             let seller=await promisePool.query('select * from `shop` where shop_id=?',shop_id)
             return seller[0]
         } catch (err) {
+            return stateCode.error
+        }
+    },
+    userTypeNum:async ()=>{
+        try {
+            let data={}
+            let rootNum=await promisePool.query('select * from `user` where type=?',userType.root)
+            let sellerNum=await promisePool.query('select * from `user` where type=?',userType.seller)
+            let NormalNum=await promisePool.query('select * from `user` where type=?',userType.Normal)
+            data[userType.root]=rootNum[0].length
+            data[userType.seller]=sellerNum[0].length
+            data[userType.Normal]=NormalNum[0].length
+            return data
+        } catch (err) {
+            console.log(err);
             return stateCode.error
         }
     },

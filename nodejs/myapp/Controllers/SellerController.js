@@ -137,6 +137,7 @@ const SellerController={
             return stateCode.error
         } 
     },
+    
 }
 
 module.exports=SellerController

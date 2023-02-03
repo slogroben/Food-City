@@ -32,6 +32,16 @@ const AdminService={
             res.send(res.send({state:stateCode.error,msg:stateMsg.error}))
         }
     },
+    getKeyUserPart:async(req,res)=>{
+        req.query.limit=req.query.limit-0
+        req.query.offset=req.query.offset-0
+        let data=await AdminContoller.getKeyUserPart(req.query)
+        if(data){
+            res.send({data:data.userlist,num:data.num})
+        }else{
+            res.send(res.send({state:stateCode.error,msg:stateMsg.error}))
+        }
+    },
     getUserOrder:async(req,res)=>{
         let user_id=req.query.user_id
         let userOrder=await AdminContoller.getUserOrder(user_id)
@@ -42,8 +52,12 @@ const AdminService={
         }
     },
     reUser:async(req,res)=>{
+        req.body.imgname=req.file.filename
         let result=await AdminContoller.reUser(req.body)
         if(result){
+            if(req.imgurl){
+                fileOperation.delUser(req.imgurl)
+            }
             res.send({state:stateCode.success,msg:stateMsg.success})
         }else{
             res.send({state:stateCode.error,msg:stateMsg.error})
@@ -72,6 +86,16 @@ const AdminService={
             res.send({state:stateCode.error,msg:stateMsg.error})
         }
     },
+    getKeySellerIsPass:async(req,res)=>{
+        req.query.limit=req.query.limit-0
+        req.query.offset=req.query.offset-0
+        let data=await AdminContoller.getKeySellerIsPass(req.query)
+        if(data){
+            res.send({data:data.sellerlist,num:data.num})
+        }else{
+            res.send(res.send({state:stateCode.error,msg:stateMsg.error}))
+        }
+    },
     getSellerIsPassNum:async(req,res)=>{
         let sellerlistNum=await AdminContoller.getSellerIsPassNum()
         if(sellerlistNum){
@@ -96,6 +120,16 @@ const AdminService={
             res.send(userlist)
         }else{
             res.send({state:stateCode.error,msg:stateMsg.error})
+        }
+    },
+    getKeySellerIsQuit:async(req,res)=>{
+        req.query.limit=req.query.limit-0
+        req.query.offset=req.query.offset-0
+        let data=await AdminContoller.getKeySellerIsQuit(req.query)
+        if(data){
+            res.send({data:data.sellerlist,num:data.num})
+        }else{
+            res.send(res.send({state:stateCode.error,msg:stateMsg.error}))
         }
     },
     getSellerIsQuitNum:async(req,res)=>{
@@ -137,11 +171,30 @@ const AdminService={
             res.send({state:stateCode.error,msg:stateMsg.error})
         }
     },
+    getKeyDelSeller:async(req,res)=>{
+        req.query.limit=req.query.limit-0
+        req.query.offset=req.query.offset-0
+        let data=await AdminContoller.getKeyDelSeller(req.query)
+        if(data){
+            res.send({data:data.sellerlist,num:data.num})
+        }else{
+            res.send(res.send({state:stateCode.error,msg:stateMsg.error}))
+        }
+    },
     addUser:async (req,res)=>{
         req.body.imgurl=req.file.filename
         let result=await AdminContoller.addUser(req.body)
         if(result==stateCode.success){
             res.send({state:stateCode.success})
+        }
+        else{
+            res.send({state:stateCode.error})
+        }
+    },
+    userTypeNum:async (req,res)=>{
+        let data=await AdminContoller.userTypeNum()
+        if(data){
+            res.send(data)
         }
         else{
             res.send({state:stateCode.error})

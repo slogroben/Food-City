@@ -29,6 +29,12 @@ router.get('/findAll',(req,res)=>{
 router.get('/findByUserID',(req,res)=>{
     OrderService.findByUserID(req,res)
 })
+router.get('/findByShopID',(req,res)=>{
+    OrderService.findByShopID(req,res)
+})
+router.get('/getOrderStateNum',(req,res)=>{
+    OrderService.getOrderStateNum(req,res)
+})
 
 
 module.exports=router

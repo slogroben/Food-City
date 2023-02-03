@@ -9,6 +9,7 @@ const OrderService={
        let user_id=getUserId(req)
        req.body.user_id=user_id  
        req.body.time=getTime   
+       req.body.shop_id
        let result= await OrderController.addOrder(req.body)
        res.send({result})
     },
@@ -50,6 +51,14 @@ const OrderService={
     findByUserID:async(req,res)=>{
         let user_id=getUserId(req)
         let data=await OrderController.findByUserID(user_id)
+        res.send(data)
+    },
+    findByShopID:async(req,res)=>{
+        let data=await OrderController.findByShopID(req.query)
+        res.send(data)
+    },
+    getOrderStateNum:async(req,res)=>{
+        let data=await OrderController.getOrderStateNum(req.query.shop_id)
         res.send(data)
     }
 }

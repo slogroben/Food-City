@@ -26,12 +26,15 @@ router.get('/getAllUserPart',(req,res)=>{
 router.get('/getAllUserNum',(req,res)=>{
     AdminService.getAllUserNum(req,res)
 })
+router.get('/getKeyUserPart',(req,res)=>{
+    AdminService.getKeyUserPart(req,res)
+})
 
 router.get('/getUserOrder',(req,res)=>{
     AdminService.getUserOrder(req,res)
 })
 
-router.post('/reUser',(req,res)=>{
+router.post('/reUser',uploadUser.single('reimgurl'),(req,res)=>{
     AdminService.reUser(req,res)
 })
 
@@ -41,6 +44,9 @@ router.get('/delUser',(req,res)=>{
 
 router.get('/getSellerIsPass',(req,res)=>{
     AdminService.getSellerIsPass(req,res)
+})
+router.get('/getKeySellerIsPass',(req,res)=>{
+    AdminService.getKeySellerIsPass(req,res)
 })
 
 router.get('/getSellerIsPassNum',(req,res)=>{
@@ -53,6 +59,9 @@ router.get('/reSellerState',(req,res)=>{
 
 router.get('/getSellerIsQuit',(req,res)=>{
     AdminService.getSellerIsQuit(req,res)
+})
+router.get('/getKeySellerIsQuit',(req,res)=>{
+    AdminService.getKeySellerIsQuit(req,res)
 })
 
 router.get('/getSellerIsQuitNum',(req,res)=>{
@@ -69,8 +78,14 @@ router.get('/getOperateShopNum',(req,res)=>{
 router.get('/delSeller',(req,res)=>{
     AdminService.delSeller(req,res)
 })
-
+router.get('/getKeyDelSeller',(req,res)=>{
+    AdminService.getKeyDelSeller(req,res)
+})
 router.post('/addUser',uploadUser.single('imgurl'),(req,res)=>{
     AdminService.addUser(req,res)
+})
+
+router.get('/userTypeNum',(req,res)=>{
+    AdminService.userTypeNum(req,res)
 })
 module.exports=router
