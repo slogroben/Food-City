@@ -124,23 +124,3 @@ nodejs
       ├─ messageCode.js			//一些信息交互码
       └─ storagePath.js			//配置存储路径
 ```
-
-
-
-```
-.
-├── README.md           
-├── libs               		// 后台常用工具模块的封装，比如格式化事件、MD5加密等
-├── route              		// 后台接口的编写目录
-├── server.js          		// 后台服务的配置文件
-├── webpack.config.js  		// webpack配置文件
-├── index.html         		// 项目入口文件
-├── package.json       		// 项目配置文件
-├── src                		// 生产目录
-│   ├── assets         		// css js 和图片资源
-│   ├── components     		// 各种Vue组件
-│   ├── store          		// vuex状态管理器
-│   ├── App.vue        		// 项目中全局Vue
-│   ├── main.js        		// Webpack 预编译入口
-│   └── router.config.js    // vue路由配置文件
-```
