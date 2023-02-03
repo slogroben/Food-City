@@ -136,6 +136,11 @@ export default {
             return this.$store.state.user
         },
         orderList(){
+            if(this.$store.state.shopcart instanceof Array){
+                this.$store.state.shopcart.forEach(o=>{
+                    o.isChecked=false
+                })
+            }
             return this.$store.state.shopcart
         }
     },
@@ -191,8 +196,12 @@ export default {
             this.checkedflag=!this.checkedflag
             this.orderList.forEach(o => {
                 o.isChecked=true
-            })   
+            })
             this.checkednum=this.orderList.length     
+            let inpboxs=document.querySelectorAll('input[type=checkbox]')
+            inpboxs.forEach(i=>{
+                i.checked=true
+            })
         },
         noallchecked(){
            this.checkedflag=!this.checkedflag
@@ -200,6 +209,10 @@ export default {
                 o.isChecked=false
             })
             this.checkednum=0
+            let inpboxs=document.querySelectorAll('input[type=checkbox]')
+            inpboxs.forEach(i=>{
+                i.checked=false
+            })
         },
         allmoney(){
             let sum=0

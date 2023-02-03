@@ -13,7 +13,7 @@
         background-color="#545c64"
         text-color="#fff"
         active-text-color="#ffd04b">
-        <el-menu-item index="0">首页</el-menu-item>
+        <el-menu-item index="0" style="">首页</el-menu-item>
         <el-submenu index="1">
             <template slot="title">
               <i class="el-icon-location"></i>
@@ -30,12 +30,13 @@
           <el-menu-item index="2-2">商家退出申请</el-menu-item>
           <el-menu-item index="2-3">取消商家经营资格</el-menu-item>
         </el-submenu>
+        <el-menu-item index="999">关于我们</el-menu-item>
       </el-menu>
     </div>
     <div class="header">
       <div class="header-left">
         <el-breadcrumb text-color="red" separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item v-for="t in tags " :key="t.name">{{t.name}}</el-breadcrumb-item>
+          <el-breadcrumb-item v-for="t in tags " :key="t.name" :to="t.path">{{t.name}}</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
       <div class="header-right">
@@ -85,28 +86,40 @@ export default {
         pageList:{
           '0':{
             name:'首页',
-            route:'adminfirstpage'
+            route:'adminfirstpage',
+            path:'/adminhome/adminfirstpage'
           },
           '1-1':{
             name:'会员信息',
-            route:'usermanage'
+            route:'usermanage',
+            path:'/usermanage'
           },
           '2-1':{
             name:'商家入驻申请',
-            route:'sellerisPass'
+            route:'sellerisPass',
+            path:'/sellermanage/sellerisPass'
+
           },
           '2-2':{
             name:'商家退出申请',
-            route:'sellerquit'
+            route:'sellerquit',
+            path:'/sellermanage/sellerquit'
+
           },
           '2-3':{
             name:'取消商家经营资格',
-            route:'sellerdel'
+            route:'sellerdel',
+            path:'/sellermanage/sellerdel'
+          },
+          '999':{
+            name:'关于我们',
+            route:'aboutme',
+            path:'/adminhome/aboutme'
           },
         }
         ,
         tags: [
-          { name: '首页', index: '0' ,route:'adminfirstpage',closable:false,plain:true},
+          { name: '首页', index: '0' ,route:'adminfirstpage',closable:false,plain:true,path:'/adminhome/adminfirstpage'},
         ]
       }
     },
@@ -136,7 +149,7 @@ export default {
               return
             }
           }
-          this.tags.push({name:this.pageList[key].name,index:key,route:this.pageList[key].route})
+          this.tags.push({name:this.pageList[key].name,index:key,route:this.pageList[key].route,path:this.pageList[key].path})
       },
       delTag(tag){
         this.tags=this.tags.filter(t=>{
@@ -155,7 +168,6 @@ export default {
         }
       },
       handleCommand(command){
-        console.log(111);
         if(command=='myhome'){
           this.$router.push({name:'adminfirstpage'})
         }
@@ -167,6 +179,11 @@ export default {
     },
     mounted(){
       this.checkUser(localStorage.getItem('token'))
+    },
+    beforeDestroy(){
+      let date=new Date()
+      let arr=[date.toLocaleDateString(),date.toLocaleTimeString()]
+      localStorage.setItem('time',arr.join(' '))
     }
     
 }

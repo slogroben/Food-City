@@ -83,6 +83,41 @@ import { mapState } from 'vuex'
         },
         methods:{
             submitdishe(){
+                if(!this.dishes.dishes_title){
+                    this.$message({
+                        message:'菜品名不能为空',
+                        type:'error'
+                    })
+                    return
+                }
+                if(!this.dishes.dishes_type){
+                    this.$message({
+                        message:'菜品类型不能为空',
+                        type:'error'
+                    })
+                    return
+                }
+                if(!this.dishes.dishes_price){
+                    this.$message({
+                        message:'菜品价格不能为空',
+                        type:'error'
+                    })
+                    return
+                }
+                if(!this.dishes.dishes_description){
+                    this.$message({
+                        message:'菜品描述不能为空',
+                        type:'error'
+                    })
+                    return
+                }
+                if(!this.dishes.dishes_imgs){
+                    this.$message({
+                        message:'菜品图片不能为空',
+                        type:'error'
+                    })
+                    return
+                }
                 let formData=new FormData()
                 let dishes={
                     dishes_title:this.dishes.dishes_title,

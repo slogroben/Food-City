@@ -1,5 +1,14 @@
 <template>
   <div>
+    <div class="top">
+        <div class="top-right">
+            <input type="text" style="width: 200px;height: 30px;"
+                placeholder="根据名称查询"
+                ref="keyword">
+                <el-button v-if="!searchflag" style="margin: 0 0 0 10px;" type="primary" @click="search" slot="append" icon="el-icon-search">搜索</el-button>
+            <el-button v-if="searchflag" @click="dropSeach" style="margin: 0 10px 0 10px;float: right;" type="danger" slot="append" icon="el-icon-close">清除搜索</el-button>
+        </div>
+    </div>
     <el-card>
         <el-table
             v-if="sellerList"
@@ -18,7 +27,7 @@
                 <template slot-scope="s">
                     <el-image
                         v-if="s.row.imgurl"
-                        style="width: 100px; height: 90px"
+                        style="width: 100px; height: 70px"
                         fit="contain"
                         :src="img(s.row.imgurl)">
                     </el-image>
@@ -26,10 +35,14 @@
             </el-table-column>
             <el-table-column prop="description" label="店铺描述"></el-table-column>
             <el-table-column prop="sellerphone" label="店主手机"></el-table-column>
-            <el-table-column label="是否通过审核">
+            <el-table-column label="是否通过审核" width="120px">
                 <template slot-scope="s">
-                    <el-button type="text" size="small" @click="quitpass(s.row)">允许退出</el-button>
-                    <el-button type="text" size="small" @click="quitreject(s.row)">拒绝退出</el-button>
+                    <li>
+                        <el-button type="primary" icon="el-icon-circle-check" size="small" @click="quitpass(s.row)">允许退出</el-button>
+                    </li>
+                    <li>
+                        <el-button type="danger" icon="el-icon-circle-close" size="small" @click="quitreject(s.row)">拒绝退出</el-button>
+                    </li>
                 </template>
             </el-table-column>
         </el-table>
@@ -58,6 +71,7 @@ export default {
     data(){
         return{
             sellerList:'',
+            searchflag:false,
             pageInfo:{
                     page:1,
                     size:4,
@@ -121,15 +135,50 @@ export default {
         },
         handleCurrentChange(page){
             this.pageInfo.page=page
-            this.getSellerNum()
-            this.getSellerList()
+                if(this.searchflag){
+                    this.search()
+                }else{
+                    this.getSellerNum()
+                    this.getSellerList()
+                }
         },
         prevPage(page){
             this.pageInfo.page=page
         },
         nextPage(page){
             this.pageInfo.page=page
-        }  
+        },          
+        search(){
+                let keyword=this.$refs.keyword.value
+                if(!keyword.trim()){
+                    this.$message({
+                        message:'请输入搜索字段',
+                        type:'error'
+                    })
+                    return
+                }
+                this.searchflag=true
+                this.pageInfo.page=1
+                let offset=(this.pageInfo.page-1)*this.pageInfo.size
+                server.getReq('/admin/getKeySellerIsQuit?limit='+this.pageInfo.size+'&offset='+offset+'&keyword='+keyword)
+                .then(
+                    response=>{
+                        this.pageInfo.allpage=response.data.num
+                        this.sellerList=response.data.data
+                    },
+                    error=>{
+                        console.log(error);
+                    }
+                )
+            },
+            dropSeach(){
+                this.searchflag=false
+                this.pageInfo.page=1
+                this.$refs.keyword.value=''
+                this.getSellerNum()
+                this.getSellerList()
+                
+            }  
     },
     mounted(){
         this.getSellerList()
@@ -139,5 +188,18 @@ export default {
 </script>
 
 <style scoped>
-
+li{
+    list-style: none;
+    margin: 10px 0 0 0;
+}
+.top{
+    margin: 10px 0 10px 0;
+}
+.top>div{
+    display: inline-block;
+}
+.top-right{
+    position: relative;
+    left: 850px;
+}
 </style>

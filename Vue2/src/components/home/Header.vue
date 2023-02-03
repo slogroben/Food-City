@@ -53,7 +53,7 @@
                     </div>
                         
                 </ul>
-            </div>
+            </div>  
     </div>
 </template>
 
@@ -61,8 +61,13 @@
 import { mapActions, mapState } from 'vuex'
     export default {
         name:'Header',
+        data(){
+            return{
+                dialogVisible:false,
+            }
+        },
         computed:{
-            ...mapState(['seller','shopstate']),
+            ...mapState(['seller','shopstate','userType']),
             user(){
                 return this.$store.state.user
             }
@@ -73,7 +78,10 @@ import { mapActions, mapState } from 'vuex'
                     this.$router.push({name:'orderhome'})
                 }
                 if(command=="usermsg"){
-
+                    if(!this.user){
+                        this.$router.push({name:'userlogin'})
+                    }
+                   this.dialogVisible=true
                 }
             },
             exitlogin(){
@@ -97,7 +105,7 @@ import { mapActions, mapState } from 'vuex'
                 }else{
                     this.$router.push({name:'userlogin'})
                 }
-            }            
+            }
         },
         mounted(){
             let token=localStorage.getItem('token')
@@ -106,7 +114,7 @@ import { mapActions, mapState } from 'vuex'
     }
 </script>
 
-<style>
+<style scoped>
   .el-dropdown-link {
     cursor: pointer;
     color: black;
@@ -114,8 +122,6 @@ import { mapActions, mapState } from 'vuex'
   .el-icon-arrow-down {
     font-size: 12px;
   }
-</style>
-<style scoped>
 .header{
     position: relative;
     left:0px;
@@ -134,8 +140,8 @@ import { mapActions, mapState } from 'vuex'
     height: 40px;
 }
 .header_right{
-    position: absolute;
-    right: 0px;
+    position:relative;
+    left: 70vw;
     top: -5px;
     width: auto;
     height: 40px;
@@ -143,6 +149,7 @@ import { mapActions, mapState } from 'vuex'
 .header div{
     display: inline-block;
     margin: 0px 10px 0px 10px;
+    
 }
 button{
     border: none;
@@ -156,4 +163,21 @@ a{
 a:active{
     color: #4e6ef2;
 }
+.imgbox {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    position: relative;
+    width: 178px;
+    height: 178px;
+    text-align:center;
+    line-height:188px;
+    font-size: 50px;
+  }
+.imgbox:hover {
+    border-color: #409EFF;
+  }
+  .img{
+    width: 178px;
+    height: 178px;
+  }
 </style>

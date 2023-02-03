@@ -53,7 +53,7 @@ const actions={
             }
         )
     },
-    //获取所有订单
+    //获取所有购物车内的订单
     getOrderList(context){
         server.getReq('/order/find?state='+context.state.orderState.shopCart).then(
             response=>{

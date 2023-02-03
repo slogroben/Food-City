@@ -1,8 +1,11 @@
 <template>
   <div>
     <div>
-        <input type="text" v-model="keyword">
-        <button @click="search">搜索</button>
+        <input type="text" style="width: 200px;height: 30px;"
+                placeholder="根据名称查询"
+                ref="keyword">
+                <el-button v-if="!searchflag" style="margin: 0 0 0 10px;" type="primary" @click="search" slot="append" icon="el-icon-search">搜索</el-button>
+                <el-button v-if="searchflag" @click="dropSeach" style="margin: 0 10px 0 10px;float: right;" type="danger" slot="append" icon="el-icon-close">清除搜索</el-button>
     </div>
         <el-table
             v-if="showDishesList"
@@ -127,7 +130,8 @@ export default {
             keyword:'',
             showDishesList:'',
             revisevisable:false,
-            thisDishes:''
+            thisDishes:'',
+            searchflag:""
         }
     },
     computed:{
@@ -158,7 +162,9 @@ export default {
                     let index=key.replace('dishes_img','')
                     let file=this.$refs[`img${index}`].files[0]
                     if(file){
-                        formData.append('oldpic',dishe[key])
+                        if(!(dishe[key]===null)){
+                            formData.append('oldpic',dishe[key])
+                        }
                         formData.append(key,file)
                     }else{
                         formData.append(key,dishe[key])
@@ -201,9 +207,15 @@ export default {
             this.getDishesList()
         },
         search(){
+            this.searchflag=true
             this.showDishesList=this.dishesList.filter(d=>{
-                return d.dishes_title.indexOf(this.keyword)!==(-1)           
+                return d.dishes_title.indexOf(this.$refs.keyword.value)!==(-1)           
             })
+        },
+        dropSeach(){
+            this.searchflag=false
+            this.$refs.keyword.value=''
+            this.getDishesList()
         },
         img(path){
             const imgname=path.replace('D:\\study\\myproject\\project1\\src\\assets\\upload\\','')

@@ -104,7 +104,6 @@ export default {
           this.activeName=key
       },
       godishe(o){
-        console.log(o);
           let {dishes_id}=o
           server.getReq('/dishe/getDisheByDisheID?dishes_id='+dishes_id)
           .then(

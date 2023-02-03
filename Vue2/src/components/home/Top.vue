@@ -48,10 +48,16 @@
         methods:{
             dishesSearch(){
                 if(!this.$refs.disheskw.value.trim()){
-                    alert("关键字不能为空")
+                    this.$message({
+                        message:"关键字不能为空",
+                        type:'error'
+                    })
                     return
                 }
                 else{
+                    if(this.$route.fullPath.includes('dishessearch')){
+                        this.$emit('getDishesList')
+                    }
                     this.$router.push({
                         name:'dishessearch',
                         query:{
@@ -63,10 +69,16 @@
             },
             shopSearch(){
                 if(!this.$refs.shopkw.value.trim()){
-                    alert("关键字不能为空")
+                    this.$message({
+                        message:"关键字不能为空",
+                        type:'error'
+                    })
                     return
                 }
                 else{
+                    if(this.$route.fullPath.includes('shopsearch')){
+                        this.$emit('getSellerList')
+                    }
                     this.$router.push({
                         name:'shopsearch',
                         query:{

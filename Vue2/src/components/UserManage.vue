@@ -5,14 +5,11 @@
             <el-button style="margin: 0 0 0 10px;" type="primary" @click="open" slot="append" icon="el-icon-plus">新增</el-button>
         </div>
         <div class="top-right">
-            <el-input
-                style="width: 200px;"
+            <input type="text" style="width: 200px;height: 30px;"
                 placeholder="根据用户名查询"
-                ref="keyword"
-                >
-                <i slot="prefix" class="el-input__icon el-icon-search"></i>
-            </el-input>
-            <el-button style="margin: 0 0 0 10px;" type="primary" @click="search" slot="append" icon="el-icon-search">搜索</el-button>
+                ref="keyword">
+            <el-button v-if="!searchflag" style="margin: 0 0 0 10px;" type="primary" @click="search" slot="append" icon="el-icon-search">搜索</el-button>
+            <el-button v-if="searchflag" @click="dropSeach" style="margin: 0 10px 0 10px;float: right;" type="danger" slot="append" icon="el-icon-close">清除搜索</el-button>
         </div>
     </div>
     <div>
@@ -23,14 +20,19 @@
             stripe
             style="width: 100%">
             <el-table-column prop="id" label="用户ID" width="180"></el-table-column>
+            <el-table-column prop="id" label="头像" width="180">
+                <template slot-scope="u"> 
+                    <el-avatar :src="avatarImg(u.row)"></el-avatar>
+                </template>
+            </el-table-column>
             <el-table-column prop="username" label="账户名" width="180"></el-table-column>
             <el-table-column prop="password" label="密码" width="180"></el-table-column>
             <el-table-column prop="phone" label="手机号"></el-table-column>
-            <el-table-column label="操作" width="180">
+            <el-table-column label="操作" width="290px">
             <template slot-scope='scope' >
-                <el-button type="text" size="small" @click="showOrder(scope.row)">查看订单</el-button>
-                <el-button type="text" size="small"  @click="revise(scope.row)">修改</el-button>
-                <el-button type="text" size="small" @click="del(scope.row.id)">删除</el-button>
+                <el-button type="primary" icon="el-icon-s-order" size="small" @click="showOrder(scope.row)">查看订单</el-button>
+                <el-button type="warning" icon="el-icon-edit" size="small"  @click="revise(scope.row)">修改</el-button>
+                <el-button type="danger" icon="el-icon-circle-close" size="small" @click="del(scope.row.id)">删除</el-button>
             </template>
             </el-table-column>
         </el-table>
@@ -51,6 +53,7 @@
         <el-dialog
         title="修改账户信息"
         :visible.sync="revisevisable"
+        :before-close="handleclose1"
         width="30%">
         <el-form label-width="80px">
         <el-form-item label="账户名">
@@ -61,6 +64,15 @@
         </el-form-item>
         <el-form-item label="用户号码">
             <el-input v-model="thisUser.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="上传图片">
+            <div>
+                <label>
+                    <i class="imgbox el-icon-plus" ref="restartbox"></i>
+                    <input type="file" ref="reimg" @change="reshowImg" style="display: none;">
+                    <img class="img"  ref="repic" src="" style="display:none">
+                </label>
+            </div>
         </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -90,6 +102,7 @@
         <el-dialog
         title="添加新用户"
         :visible.sync="addDialog"
+        :before-close="handleclose2"
         width="50%">
         <el-form label-width="80px">
             <el-form-item label="账户名">
@@ -133,6 +146,7 @@ import axios from 'axios'
 import qs from 'qs'
 import server from '@/utils/request'
 import { mapState } from 'vuex'
+import imgPath from '@/utils/imgPath'
     export default {
         name:'UserManage',
         data(){
@@ -144,9 +158,10 @@ import { mapState } from 'vuex'
                 thisUser:'',
                 ordervisable:false,
                 orderList:'',
+                searchflag:false,
                 pageInfo:{
                     page:1,
-                    size:8,
+                    size:6,
                     allpage:9999
                 },
                 addDialog:false,
@@ -156,7 +171,8 @@ import { mapState } from 'vuex'
                     phone:'',
                     imgurl:'',
                     type:'2',
-                }
+                },
+                circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
             }
         },
         computed:{
@@ -208,11 +224,28 @@ import { mapState } from 'vuex'
                 )
             },
             search(){
-                console.log(this.$refs.keyword.value);
-                this.showuserList=this.userList
-                this.showuserList=this.showuserList.filter(u=>{               
-                    return u.username.indexOf(this.$refs.keyword.value)!=(-1)
-                })
+                let keyword=this.$refs.keyword.value
+                if(!keyword.trim()){
+                    this.$message({
+                        message:'请输入搜索字段',
+                        type:'error'
+                    })
+                    return
+                }
+                this.searchflag=true
+                this.pageInfo.page=1
+                let offset=(this.pageInfo.page-1)*this.pageInfo.size
+                
+                server.getReq('/admin/getKeyUserPart?limit='+this.pageInfo.size+'&offset='+offset+'&keyword='+keyword)
+                .then(
+                    response=>{
+                        this.pageInfo.allpage=response.data.num
+                        this.showuserList=response.data.data
+                    },
+                    error=>{
+                        console.log(error);
+                    }
+                )
             },
             revise(user){
                  this.revisevisable=true
@@ -220,11 +253,19 @@ import { mapState } from 'vuex'
             },
             saveRevise(){
                 this.revisevisable = false
-                server.postReq('/admin/reUser',this.thisUser)
+                let formdata=new FormData()
+                if(this.thisUser.reimgurl)
+                for (const key in this.thisUser) {
+                    if (Object.hasOwnProperty.call(this.thisUser, key)) {
+                        formdata.append(key,this.thisUser[key]) 
+                    }
+                }
+                server.postReq('/admin/reUser',formdata,{
+                        'Content-Type': 'multipart/form-data'
+                    })
                 .then(
                     response=>{
                         this.getAllUserPart()
-                        // this.$router.go()
                     },
                     error=>{
                         console.log(error);
@@ -261,8 +302,33 @@ import { mapState } from 'vuex'
             },
             handleCurrentChange(page){
                 this.pageInfo.page=page
-                this.getUserNum()
-                this.getAllUserPart()
+                if(!this.searchflag){
+                    this.getUserNum()
+                    this.getAllUserPart()
+                }else{
+                    this.search()
+                }
+                
+            },
+            handleclose1(){
+                this.thisUser=''
+                this.$refs.restartbox.style.display='block'
+                this.$refs.repic.style.display='none'
+                this.$refs.repic.src=''
+                this.revisevisable=false
+            },
+            handleclose2(){
+                this.newUser={
+                    username:'',
+                    password:'',
+                    phone:'',
+                    imgurl:'',
+                    type:'2',
+                }
+                this.$refs.startbox.style.display='block'
+                this.$refs.pic.style.display='none'
+                this.$refs.pic.src=''
+                this.addDialog=false
             },
             prevPage(page){
                 this.pageInfo.page=page
@@ -329,6 +395,34 @@ import { mapState } from 'vuex'
                     this.$refs.pic.src=reader.result
                     this.newUser.imgurl=img
                 }
+            },
+            reshowImg(){
+                let reader=new FileReader()
+                let img=this.$refs.reimg.files[0]
+                this.$refs.restartbox.style.display='none'
+                reader.readAsDataURL(img)
+                reader.onload=()=>{
+                    this.$refs.repic.style.display='block'
+                    this.$refs.repic.src=reader.result
+                    this.thisUser.reimgurl=img
+                }
+            },
+            dropSeach(){
+                this.searchflag=false
+                this.pageInfo.page=1
+                this.$refs.keyword.value=''
+                this.getUserNum()
+                this.getAllUserPart()
+                
+            },
+            avatarImg(u){
+                console.log(u);
+                if(u.imgurl){
+                    return imgPath.userImg(u.imgurl)
+                }
+                else{
+                    return this.circleUrl
+                }
             }
         },
         mounted(){
@@ -349,7 +443,8 @@ li{
     display: inline-block;
 }
 .top-right{
-    float: right;
+    position: relative;
+    left: 750px;
 }
 .imgbox {
     border: 1px dashed #d9d9d9;

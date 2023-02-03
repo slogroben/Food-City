@@ -1,7 +1,7 @@
 <template>
   <div>
     <Header></Header>
-    <Top></Top>
+    <Top @getSellerList="getSellerList"></Top>
     <div class="tab" v-if="showSellerList">
         <el-table
             :data="showSellerList"

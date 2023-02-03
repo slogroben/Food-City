@@ -18,6 +18,13 @@
           <el-menu-item index="2-1">发布菜品</el-menu-item>
           <el-menu-item index="2-2">管理菜品</el-menu-item>
         </el-submenu>
+        <el-submenu index="3" v-if="seller.shopstate==$store.state.shopstate.operate">
+          <template slot="title">订单管理</template>
+          <el-menu-item index="3-1">未支付</el-menu-item>
+          <el-menu-item index="3-2">已支付</el-menu-item>
+          <el-menu-item index="3-3">已完成</el-menu-item>
+          <el-menu-item index="3-4">统计数据</el-menu-item>
+        </el-submenu>
       </el-menu>
     </div>
     <div class="rightbox">
@@ -36,6 +43,22 @@
                 </el-tab-pane>
               </el-tabs>
             </el-tab-pane>
+            <el-tab-pane label="订单管理" name="3"  v-if="seller.shopstate==$store.state.shopstate.operate">
+              <el-tabs v-model="activeName1" type="border-card">
+                <el-tab-pane label="未支付" name="3-1">
+                    <NoPay></NoPay>
+                </el-tab-pane>
+                <el-tab-pane label="已支付" name="3-2">
+                    <Pay></Pay>
+                </el-tab-pane>
+                <el-tab-pane label="已完成" name="3-3">
+                    <Finish></Finish>
+                </el-tab-pane>
+                <el-tab-pane label="统计数据" name="3-4">
+                    <OrderData></OrderData>
+                </el-tab-pane>
+              </el-tabs>
+            </el-tab-pane>
         </el-tabs>
       </template> 
     </div>
@@ -49,6 +72,11 @@ import Header from '../components/home/Header.vue'
 import MySellerManage from '../components/MySellerManage.vue'
 import PushDishe from '../components/DishesManage/PushDishe.vue'
 import ManageDishe from '../components/DishesManage/ManageDishe.vue'
+import NoPay from '@/components/OrderManage/NoPay.vue'
+import Pay from '@/components/OrderManage/Pay.vue'
+import Finish from '@/components/OrderManage/Finish.vue'
+import OrderData from '@/components/OrderManage/OrderData.vue'
+
 
 export default {
     name:'SellerHome',
@@ -59,11 +87,15 @@ export default {
       }
     },
     components:{
-      Header,
-      MySellerManage,
-      PushDishe,
-      ManageDishe
-    },
+    Header,
+    MySellerManage,
+    PushDishe,
+    ManageDishe,
+    NoPay,
+    Pay,
+    Finish,
+    OrderData
+},
     computed:{
       ...mapState(['seller']),
     },

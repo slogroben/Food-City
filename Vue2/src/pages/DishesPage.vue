@@ -63,13 +63,14 @@
             <el-button style="margin-left: 50px;" @click="sellerpage" type="warning" round>进入店铺</el-button>
         </div>
 	</div>
-    <div style="position: relative;left: 125px; top: 600px;width: 1182px;height: 100px;">
+    <div style="position: relative;left: 125px; width: 1182px;top: 600px;height: auto;">
         <div style="position:absolute;width: 1182px;height: 80px;">
             <hr/>
-            <p style="text-align: center;">评论区</p>
+            <p style="text-align: center;font-size: 20px;font-weight: 600;">评论区</p>
             <hr/>
+            <el-empty v-if="!comments.length" description="暂时还没有评论哦，赶紧下单评论一下吧"></el-empty>
         </div>
-        <ul v-if="comments"  class="comments infinite-list" v-infinite-scroll="load">
+        <ul v-if="comments"  class="comments infinite-list">
             <li class="infinite-list-item" v-for="c in comments" :key="c.uc_id"  style="position: relative;top:0;">
                 <div class="usermsg" style="position: absolute;top: 80px; width: 1182px;height: 80px;">
                     <div class="userimg" style="float: left;margin:10px 50px 0px 50px;">
@@ -84,10 +85,19 @@
                             {{c.time}}
                         </div>
                     </div>
+                    <div style="float: right;margin-right: 20px;">
+                        <el-rate
+                        v-model="c.score"
+                        disabled
+                        show-score
+                        text-color="#ff9900"
+                        score-template="{value}分">
+                        </el-rate>
+                    </div>
                 </div>
-                <div class="comment" style="position: absolute;top:160px ;width: 1182px;height: 100px;">
+                <div class="comment" style="position: absolute;top:160px ;width: 1100px;height: 100px;">
                     <p style="margin-left: 160px;font-size: 20px;">{{c.comment }}</p>
-                    <hr/>
+                    <hr>
                 </div>
             </li>
         </ul>

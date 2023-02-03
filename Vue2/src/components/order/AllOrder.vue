@@ -93,6 +93,7 @@
       title="发表评价"
       :visible.sync="commentflag"
       width="600px"
+      :before-close="handleBeforeClose"
       v-if="this.chooseOrder">
       <el-card :body-style="{ padding: '0px' }" >
         <img style="float: left;" :src="img(this.chooseOrder.order_img1)" class="image" width="100px" height="100px">
@@ -105,10 +106,14 @@
       <br/>
       <div>
         <span style="font-weight: 600;font-size: 20px;">商品得分</span>
-        <div>
+        <el-rate
+            v-model="score"
+            show-text>
+        </el-rate>
+        <!-- <div>
           <i class="el-icon-star-off" @load="chooseStar($event)"  @mouseenter="chooseStar($event)" style="font-size: 50px;" v-for=" num in 5 " :key="num"></i>
           <span style="margin-left: 10px;,font-weight: 600;font-size: 20px;">{{this.score+'分'}}</span>
-        </div>  
+        </div>   -->
       </div>
       <div>
         <p style="font-weight: 600;font-size: 20px;">商品评价</p>
@@ -274,6 +279,11 @@ import server from '@/utils/request'
                   console.log(error);
                 }
               )
+            },
+            handleBeforeClose(){
+              this.commentflag=false
+              this.score=0
+              this.comment=""
             }
         },
         mounted(){

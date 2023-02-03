@@ -10,7 +10,13 @@ import SellerLogin from '/src/pages/SellerLogin'
 import AdminHome from '/src/pages/AdminHome'
 import AdminLogin from '/src/pages/AdminLogin'
 import AdminFirstPage from '/src/components/AdminFirstPage'
+import AboutMe from '/src/components/AboutMe'
 
+//订单管理相关
+import NoPay from '/src/components/OrderManage/NoPay'
+import Pay from '/src/components/OrderManage/Pay'
+import Finish from '/src/components/OrderManage/Finish'
+import OrderData from '/src/components/OrderManage/OrderData'
 
 
 import UserManage from '/src/components/UserManage'
@@ -158,6 +164,12 @@ const router = new VueRouter({
                     name:'adminfirstpage',
                     path:'adminfirstpage',
                     component:AdminFirstPage
+                },
+                //关于我们
+                {
+                    name:'aboutme',
+                    path:'aboutme',
+                    component:AboutMe
                 },
                 //用户管理
                 {

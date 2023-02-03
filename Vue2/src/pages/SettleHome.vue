@@ -21,17 +21,20 @@
                 </template>                  
             </el-table-column>
             <el-table-column prop="order_title" label="商品名" width="280"></el-table-column>
-            <el-table-column label="单价">
+            <el-table-column label="单价（单位：元）">
                 <template slot-scope="o">
-                    {{o.row.order_price}}
+                    {{o.row.order_price+'元'}}
                 </template>
             </el-table-column>
             <el-table-column prop="order_num" label="数量">
                 <template slot-scope="o">
-                    {{o.row.order_price*o.row.order_num}}
+                    {{o.row.order_num}}
                 </template>
             </el-table-column>
-            <el-table-column prop="sum" label="总价" width="100px">
+            <el-table-column prop="sum" label="总价（单位：元）" width="150px">
+                <template slot-scope="o">
+                    {{o.row.order_price*o.row.order_num}}
+                </template>
             </el-table-column>
         </el-table>            
         <el-button style="float: right;margin:20px 20px 0 0 ;" @click="topay" type="primary">去支付</el-button>  
@@ -71,7 +74,7 @@ export default {
         },
         restate(id,restate){
                 let token=localStorage.getItem('token')
-                server.getReq('http://localhost:8080/order/restate?order_id='+id+'&state='+restate)
+                server.getReq('/order/restate?order_id='+id+'&state='+restate)
                 .then(
                     response=>{          
                     },

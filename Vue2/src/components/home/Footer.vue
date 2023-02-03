@@ -20,7 +20,6 @@
                     <li><img src="" alt="图片未加载"></li>
                     <li><img src="" alt="图片未加载"></li>
                 </ul>
-                <router-link :to="{name:'adminlogin'}">我是管理员</router-link>
             </div>
     </div>
 </template>
